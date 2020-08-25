@@ -70,6 +70,210 @@ typedef unsigned int64 DEPRECATED uint64;
 #endif // HAVE_STDINT_H
 
 #ifdef __cplusplus
+
+class varchar {
+private:
+
+	int *refcnt;
+	char *bufptr;
+	size_t *buflen;
+
+	inline char *resize(size_t len)
+	{
+		if ( len > *buflen )
+		{
+			*buflen = ::pow(2,::ceil(::log(len+1)/::log(2)));
+			char *bigger = new char[*buflen];
+			strncpy(bigger,bufptr,(*buflen)-1);
+			delete [] bufptr;
+			bufptr = bigger;
+		}
+		return bufptr;
+	}
+
+	inline char *resize(const char *s)
+	{
+		return resize(strlen(s)+1);
+	}
+
+public:
+
+	// Constructor: charbuf
+	inline varchar(size_t size=0) 
+	{ 
+		refcnt = new int; 
+		*refcnt = 1; 
+		buflen = new size_t;
+		*buflen = size+1; 
+		bufptr = new char[*buflen]; 
+		erase(); 
+	};
+
+	// Constructor: charbuf
+	inline varchar(const char *s) 
+	{ 
+		refcnt = new int; 
+		*refcnt = 1; 
+		buflen = new size_t;
+		*buflen = ::pow(2,::ceil(::log(strlen(s)+1)/::log(2))); // round up to next power of 2 
+		bufptr = new char[*buflen]; 
+		copy_from(s); 
+	};
+
+	// Constructor: charbuf<size>
+	inline varchar(varchar &s) 
+	{ 
+		refcnt = s.refcnt;
+		buflen = s.buflen;
+		bufptr = s.bufptr;
+		(*refcnt)++; 
+	}
+
+	// Destructor: ~charbuf<size>
+	inline ~varchar(void) 
+	{
+		if ( --(*refcnt) == 0 )
+		{
+			delete refcnt;
+			delete buflen;
+			delete [] bufptr;
+			refcnt = NULL;
+			buflen = NULL;
+			bufptr = NULL;
+		} 
+	};
+
+	inline varchar &operator = (varchar &s)
+	{
+		refcnt = s.refcnt;
+		buflen = s.buflen;
+		bufptr = s.bufptr;
+		(*refcnt)++; 
+		return *this;
+	}
+
+	inline varchar &operator = (const char *s)
+	{
+		copy_from(s);
+		return *this;
+	}
+
+	// Method: get_size
+	inline size_t get_size(void) const 
+	{ 
+		return *buflen; 
+	};
+
+	// Method: get_length
+	inline size_t get_length(void) const 
+	{ 
+		return strlen(bufptr); 
+	};
+
+	// Method: get_string
+	inline char *get_string(void) 
+	{ 
+		return bufptr; 
+	};
+
+	// Method: erase
+	inline char* erase(void) 
+	{ 
+		return (char*)memset(bufptr,0,*buflen); 
+	};
+
+	// Method: copy_to
+	inline char* copy_to(char *s, size_t len = 0) const 
+	{ 
+		return ( s != NULL ) ? strncpy(s,bufptr,len?len:*buflen) : NULL; 
+	};
+
+	// Method: copy_from
+	inline char* copy_from(const char *s) 
+	{ 
+
+		return ( s != NULL ) ? strncpy(resize(s),s,*buflen) : NULL; 
+	};
+
+	// Method: cast to const char*
+	inline operator const char*(void) const
+	{ 
+		return bufptr; 
+	};
+
+	// Method: operator ==
+	inline bool operator == (const char *s) const
+	{ 
+		return strcmp(bufptr,s)==0; 
+	};
+
+	// Method: operator <
+	inline bool operator < (const char *s) const
+	{ 
+		return strcmp(bufptr,s)==-1; 
+	};
+
+	// Method: operator >
+	inline bool operator > (const char *s) const
+	{ 
+		return strcmp(bufptr,s)==1; 
+	};
+
+	// Method: operator <=
+	inline bool operator <= (const char *s) const
+	{ 
+		return strcmp(bufptr,s)<=0; 
+	};
+
+	// Method: operator >=
+	inline bool operator >= (const char *s) const
+	{ 
+		return strcmp(bufptr,s)>=0; 
+	};
+
+	// Method: find
+	inline char *find(const char c)
+	{ 
+		return strchr(bufptr,c); 
+	};
+
+	// Method: find
+	inline char *find(const char *s)
+	{ 
+		return strstr(bufptr,s); 
+	};
+
+	// Method: findrev
+	inline char *findrev(const char c) 
+	{ 
+		return strrchr(bufptr,c); 
+	};
+
+	// Method: token
+	inline char *token(const char *from, const char *delim, char **context) 
+	{ 
+		return ::strtok_r(from==NULL?bufptr:NULL,delim,context); 
+	};
+
+	// Method: format
+	inline size_t format(char *fmt, ...) 
+	{ 
+		va_list ptr; 
+		va_start(ptr,fmt); 
+		size_t len = vformat(fmt,ptr);
+		va_end(ptr); 
+		return len; 
+	};
+
+	// Method: vformat
+	inline size_t vformat(char *fmt, va_list ptr) 
+	{ 
+		size_t len = vsnprintf(NULL,0,fmt,ptr);
+		resize(len+1);
+		return vsnprintf(bufptr,(*buflen)-1,fmt,ptr); 
+	};
+};
+
 /*	Class: charbuf
 
 	General character array buffer handling class
