@@ -97,11 +97,11 @@ eventgen::eventgen(MODULE *module)
 /* Object creation is called once for each object that is created by the core */
 int eventgen::create(void)
 {
-	target_group[0] = '\0';
-	fault_type[0] = '\0';
-	manual_fault_list[0] = '\0';
-	controlled_switch[0] = '\0';
-	external_fault_event[0] = '\0';
+	target_group.erase();
+	fault_type.erase();
+	manual_fault_list.erase();
+	controlled_switch.erase();
+	external_fault_event.erase();
 	use_external_faults = false;
 	switch_state = 1;
 	last_switch_state = 1;
@@ -351,7 +351,7 @@ int eventgen::init(OBJECT *parent)
 			}
 			
 			//Loop through the count and try parsing out what everything is - do individual error checks
-			token_a = manual_fault_list;
+			token_a = manual_fault_list.get_string();
 			for (index=0; index<UnreliableObjCount; index++)
 			{
 				//First item is the object, grab it
@@ -834,9 +834,10 @@ TIMESTAMP eventgen::presync(TIMESTAMP t0, TIMESTAMP t1)
 		char impl_fault[257];
 		FUNCTIONADDR funadd = NULL;
 		int returnval;
-		if(use_external_faults && external_fault_event[0] != '\0') {
-			parse_external_fault_events((char *)external_fault_event);
-			memset(external_fault_event, '\0', 1024);
+		if(use_external_faults && external_fault_event[0] != '\0') 
+		{
+			parse_external_fault_events(external_fault_event);
+			external_fault_event.erase();
 		}
 		//loop through external events
 		if ( !external_events.empty() ) 
@@ -1307,7 +1308,7 @@ int eventgen::add_unhandled_event(OBJECT *obj_to_fault, const char *event_type, 
 		new_struct->objdetails.implemented_fault = implemented_fault;
 
 	//Populate the details - no real supersecond support now, just populate
-	memcpy(new_struct->event_type,event_type,33*sizeof(char));
+	new_struct->event_type = event_type;
 	new_struct->objdetails.obj_of_int = obj_to_fault;
 	new_struct->objdetails.obj_made_int = NULL;
 	new_struct->objdetails.fail_time = fail_time;
@@ -2089,7 +2090,7 @@ void eventgen::do_event(TIMESTAMP t1_ts, double t1_dbl, bool entry_type)
 	}
 }
 
-void eventgen::parse_external_fault_events(char *events_char)
+void eventgen::parse_external_fault_events(const char *events_char)
 {
 	std::string events_str((const char *)events_char);
 	Json::Reader json_rdr;

@@ -4547,8 +4547,9 @@ int GldLoader::object_properties(PARSER, CLASS *oclass, OBJECT *obj)
 						SAVETERM;
 						ACCEPT;
 					}
-					else if (strcmp(propname,"groupid")==0){
-						strncpy(obj->groupid, propval, sizeof(obj->groupid));
+					else if (strcmp(propname,"groupid")==0)
+					{
+						obj->groupid = propval;
 					}
 					else if (strcmp(propname,"flags")==0)
 					{

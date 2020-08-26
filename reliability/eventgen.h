@@ -106,7 +106,7 @@ private:
 	void do_event(TIMESTAMP t1_ts, double t1_dbl, bool entry_type);	/**< Function to execute a status change on objects driven by event_gen */
 	void regen_events(TIMESTAMP t1_ts, double t1_dbl);				/**< Function to update time to next event on the system */
 
-	void parse_external_fault_events(char *event_char);
+	void parse_external_fault_events(const char *event_char);
 
 public:
 	RELEVANTSTRUCT Unhandled_Events;	/**< unhandled event linked list */

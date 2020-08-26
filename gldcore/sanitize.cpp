@@ -68,34 +68,33 @@ int sanitize(void *main, int argc, const char *argv[])
 	}
 
 	// dump object name index
-	if ( strcmp(global_sanitizeindex,".xml")==0 )
+	if ( global_sanitizeindex == ".xml" )
 	{
-		strcpy(global_sanitizeindex,global_modelname);
-		char *ext = strrchr(global_sanitizeindex,'.');
-		if ( ext && strcmp(ext,".glm")==0 ) strcpy(ext,"-index.xml");
-		else strcat(global_sanitizeindex,"-index.xml");
+		global_sanitizeindex = global_modelname;
+		global_sanitizeindex.copy_from("-index.xml",global_sanitizeindex.findrev(".xml"));
 	}
-	else if ( strcmp(global_sanitizeindex,".txt")==0 )
+	else if ( global_sanitizeindex == ".txt" )
 	{
-		strcpy(global_sanitizeindex,global_modelname);
-		char *ext = strrchr(global_sanitizeindex,'.');
-		if ( ext && strcmp(ext,".glm")==0 ) strcpy(ext,"-index.txt");
-		else strcat(global_sanitizeindex,"-index.txt");
+		global_sanitizeindex = global_modelname;
+		global_sanitizeindex.copy_from("-index.txt",global_sanitizeindex.findrev(".txt"));
 	}
-	else if ( global_sanitizeindex[0]=='.' )
+	else if ( global_sanitizeindex == ".json" )
+	{
+		global_sanitizeindex = global_modelname;
+		global_sanitizeindex.copy_from("-index.json",global_sanitizeindex.findrev(".json"));
+	}
+	else if ( global_sanitizeindex[0] == '.' )
 	{
 		output_error("sanitization index file spec '%s' is not recognized", global_sanitizeindex.get_string());
 		return -2;
 	}
-	if ( strcmp(global_sanitizeindex,"")!=0 )
+	if ( global_sanitizeindex != "" )
 	{
-		char *ext = strrchr(global_sanitizeindex,'.');
-		bool use_xml = (ext && strcmp(ext,".xml")==0) ;
 		fp = fopen(global_sanitizeindex,"w");
 		if ( fp )
 		{
 			SAFENAME *item;
-			if ( use_xml )
+			if ( varchar(global_sanitizeindex.substr(-4)) == ".xml" )
 			{
 				fprintf(fp,"<data>\n");
 				fprintf(fp,"\t<modelname>%s</modelname>\n",global_modelname);
@@ -108,6 +107,20 @@ int sanitize(void *main, int argc, const char *argv[])
 					fprintf(fp,"\t\t<name>\n\t\t\t<safe>%s</safe>\n\t\t\t<unsafe>%s</unsafe>\n\t\t</name>\n", item->name, item->old);
 				fprintf(fp,"\t</safename_list>\n");
 				fprintf(fp,"</data>\n");
+			}
+			else if ( varchar(global_sanitizeindex.substr(-4)) == ".json" )
+			{
+				fprintf(fp,"{\n");
+				fprintf(fp,"  \"modelname\" : \"%s\",\n",global_modelname);
+				fprintf(fp,"  \"geographic_offsets\" : {\n");
+				fprintf(fp,"    \"latitude\" : %.6f,\n",delta_latitude);
+				fprintf(fp,"    \"longitude\" : %.6f\n",delta_longitude);
+				fprintf(fp,"  }\n");
+				fprintf(fp,"  \"safename_map\" : {\n");
+				for ( item=safename_list ; item!=NULL ; item=item->next )
+					fprintf(fp,"    \"%s\" : \"%s\"%s\n", item->old, item->name, item->next != NULL ? "," : "");
+				fprintf(fp,"  }\n");
+				fprintf(fp,"}\n");
 			}
 			else
 			{

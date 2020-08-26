@@ -264,7 +264,7 @@ int csv_reader::read_prop(char *line)
 	return 1;
 }
 
-int csv_reader::read_header(char *line ) 
+int csv_reader::read_header(const char *line ) 
 {
 	struct cmnlist {
 		char *name;

@@ -233,7 +233,7 @@ int office::create(void)
 	Day 0 = Sunday, etc., day 7 = holiday
 	Hour 0 = midnight to 1am
  */
-static void occupancy_schedule(char *text, char occupied[24])
+static void occupancy_schedule(const char *text, char occupied[24])
 {
 	char days[8];
 	memset(days,0,sizeof(days));
@@ -241,12 +241,11 @@ static void occupancy_schedule(char *text, char occupied[24])
 	char hours[27];
 	memset(hours,0,sizeof(hours));
 
-	char *p = text;
 	int next=-1;
 	int start=-1, stop=-1;
 	char *target = days;
 
-	for (p=text; true; p++)
+	for ( const char *p = text ; true ; p++)
 	{
 		if (*p==';')
 		{	/* recursion on the rest of the schedule */
@@ -355,8 +354,8 @@ int office::init(OBJECT *parent)
 		zone.control.auxiliary_cutin=2;
 
 	/* schedule */
-	if (strcmp(zone.design.schedule,"")==0)
-		strcpy(zone.design.schedule,"1-5 8-17"); /* default is unoccupied, MTWRF 8a-5p is occupied */
+	if ( zone.design.schedule == "" )
+		zone.design.schedule = "1-5 8-17"; /* default is unoccupied, MTWRF 8a-5p is occupied */
 	occupancy_schedule(zone.design.schedule,occupied);
 
 	/* automatic sizing of HVAC equipment */

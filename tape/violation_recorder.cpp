@@ -83,7 +83,7 @@ int violation_recorder::init(OBJECT *obj){
 			gl_error("violation_recorder::init(): no filename defined in strict mode");
 			return 0;
 		} else {
-			sprintf(filename, "%s-violation-log.csv", oclass->name);
+			filename.format("%s-violation-log.csv", oclass->name);
 			gl_warning("violation_recorder::init(): no filename defined, auto-generating '%s'", filename.get_string());
 		}
 	}
@@ -95,7 +95,7 @@ int violation_recorder::init(OBJECT *obj){
 			gl_error("violation_recorder::init(): no summary defined in strict mode");
 			return 0;
 		} else {
-			sprintf(summary, "%s-violation-summary.csv", oclass->name);
+			summary.format("%s-violation-summary.csv", oclass->name);
 			gl_warning("violation_recorder::init(): no summary defined, auto-generating '%s'", summary.get_string());
 		}
 	}

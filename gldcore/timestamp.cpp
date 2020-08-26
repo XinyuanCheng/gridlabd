@@ -1037,7 +1037,7 @@ const char *timestamp_set_tz(const char *tz_name)
 	}
 
 	load_tzspecs(tz_name);
-	strcpy(global_timezone_locale,current_tzname);
+	global_timezone_locale = current_tzname;
 
 	return current_tzname;
 }

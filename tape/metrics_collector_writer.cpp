@@ -46,7 +46,7 @@ int metrics_collector_writer::init(OBJECT *parent)
 	// check for filename
 	if(0 == filename[0]){
 		// if no filename, auto-generate based on ID
-		sprintf(filename, "%256s-%256i-metrics_collector_output.json", oclass->name, obj->id);
+		filename.format("%256s-%256i-metrics_collector_output.json", oclass->name, obj->id);
 		gl_warning("metrics_collector_writer::init(): no filename defined, auto-generating '%s'", filename.get_string());
 		/* TROUBLESHOOT
 			group_recorder requires a filename.  If none is provided, a filename will be generated
@@ -55,18 +55,12 @@ int metrics_collector_writer::init(OBJECT *parent)
 	}
 
 	// Write seperate json files for meters, triplex_meters, inverters, capacitors, regulators, houses, substation_meter:
-	filename_billing_meter = "billing_meter_";
-	strcat(filename_billing_meter, filename);
-	filename_inverter = "inverter_";
-	strcat(filename_inverter, filename);
-	filename_capacitor = "capacitor_";
-	strcat(filename_capacitor, filename);
-	filename_regulator = "regulator_";
-	strcat(filename_regulator, filename);
-	filename_house = "house_";
-	strcat(filename_house, filename);
-	filename_substation = "substation_";
-	strcat(filename_substation, filename);
+	filename_billing_meter.format("billing_meter_%s",(const char*)filename);
+	filename_inverter.format("inverter_%s",(const char*)filename);
+	filename_capacitor.format("capacitor_%s",(const char*)filename);
+	filename_regulator.format("regulator_%s",(const char*)filename);
+	filename_house.format("house_%s",(const char*)filename);
+	filename_substation.format("substation_%s",(const char*)filename);
 
 	// Check valid metrics_collector output interval
 	interval_length = (int64)(interval_length_dbl);

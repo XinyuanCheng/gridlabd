@@ -19,7 +19,7 @@
 #include "weather.h"
 #include "weather_reader.h"
 
-extern char climate_library_path[sizeof(char1024)];
+extern varchar climate_library_path;
 
 typedef enum e_compass_ptr {
 	CP_H    = 0,

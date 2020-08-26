@@ -424,7 +424,7 @@ static void daemon_loadconfig(void)
 	if ( fp == NULL )
 	{
 
-		if ( find_file(global_daemon_configfile,NULL,R_OK,global_daemon_configfile,sizeof(global_daemon_configfile)-1) == NULL || (fp=fopen(global_daemon_configfile,"rt")) == NULL )
+		if ( find_file(global_daemon_configfile,NULL,R_OK,global_daemon_configfile.resize(PATH_MAX+1),PATH_MAX) == NULL || (fp=fopen(global_daemon_configfile,"rt")) == NULL )
 		{
 			output_warning("daemon_loadconfig(): '%s' open failed: %s",(const char*)global_daemon_configfile,strerror(errno));
 			output_warning("daemon_loadconfig(): using default configuration");
@@ -498,8 +498,8 @@ static int daemon_arguments(int argc, const char *argv[])
 			if ( argc > 0 )
 			{
 				struct stat fs;
-				strcpy((char*)global_daemon_configfile,*argv);
-				if ( stat((char*)global_daemon_configfile,&fs) == 0 )
+				global_daemon_configfile = *argv;
+				if ( stat((const char*)global_daemon_configfile,&fs) == 0 )
 				{
 					IN_MYCONTEXT output_debug("configuration file '%s selected", (const char*)global_daemon_configfile);
 				}

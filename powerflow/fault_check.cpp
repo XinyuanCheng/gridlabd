@@ -53,7 +53,7 @@ int fault_check::create(void)
 	phases = PHASE_A;	//Arbitrary - set so powerflow_object shuts up (library doesn't grant us access to synch)
 
 	fcheck_state = SINGLE;	//Default to only one check
-	output_filename[0] = '\0';	//Empty file name
+	output_filename.erase();	//Empty file name
 
 	full_print_output = false;	//By default, only output unsupported nodes
 

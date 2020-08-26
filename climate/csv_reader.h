@@ -25,7 +25,7 @@ class csv_reader : public weather_reader {
 private:
 protected:
 	int read_prop(char *);
-	int read_header(char *);
+	int read_header(const char *);
 	int read_line(char *, int);
 
 	int column_ct;

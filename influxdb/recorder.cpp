@@ -209,7 +209,7 @@ int recorder::get_taglist(char *buffer, int size)
     return pos;
 }
 
-int recorder::add_taglist(char *buffer)
+int recorder::add_taglist(const char *buffer)
 {
     char value[1024];
     int len = strlen(buffer);

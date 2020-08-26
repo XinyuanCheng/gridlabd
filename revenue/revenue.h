@@ -8,7 +8,7 @@
 #include "gridlabd.h"
 
 #ifdef DLMAIN
-#define INIT(X) = X
+#define INIT(X) (X)
 #define GLOBAL
 #else
 #define INIT(X)

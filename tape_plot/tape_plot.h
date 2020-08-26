@@ -17,7 +17,7 @@ EXPORT void close_shaper(struct shaper *my);
 EXPORT int open_recorder(struct recorder *my, char *fname, char *flags);
 EXPORT int write_recorder(struct recorder *my, char *timestamp, char *value);
 EXPORT void close_recorder(struct recorder *my);
-EXPORT void write_default_plot_commands_rec(struct recorder *my, char32 extension);
+EXPORT void write_default_plot_commands_rec(struct recorder *my, char* extension);
 EXPORT void splitString(char *propertyStr, char *columns[]);
 EXPORT void set_recorder(struct recorder *my);
 EXPORT void close_recorder_wrapper(void);
@@ -25,7 +25,7 @@ EXPORT void close_recorder_wrapper(void);
 EXPORT int open_collector(struct collector *my, char *fname, char *flags);
 EXPORT int write_collector(struct collector *my, char *timestamp, char *value);
 EXPORT void close_collector(struct collector *my);
-EXPORT void write_default_plot_commands_col(struct collector *my, char32 extension);
+EXPORT void write_default_plot_commands_col(struct collector *my, char* extension);
 
 struct recorder *global_rec;
 #endif

@@ -81,7 +81,7 @@ int evcharger_det::create()
 
 	Work_Charge_Available = false;	//No work charging
 	
-	NHTSDataFile[0] = '\0';			//Null file
+	NHTSDataFile.erase();			//Null file
 	VehicleLocation = 0;		
 
 	//Car information - battery info is left uninitialized

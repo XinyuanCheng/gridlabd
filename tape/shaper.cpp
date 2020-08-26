@@ -57,11 +57,11 @@ EXPORT int create_shaper(OBJECT **obj, OBJECT *parent)
 		struct shaper *my = OBJECTDATA(*obj,struct shaper);
 		last_shaper = *obj;
 		gl_set_parent(*obj,parent);
-		strcpy(my->file,"");
-		strcpy(my->filetype,"txt");
-		strcpy(my->property,"");
-		strcpy(my->group,"");
-		strcpy(my->mode, "file");
+		my->file = "";
+		my->filetype = "txt";
+		my->property = "";
+		my->group = "";
+		my->mode = "file";
 		my->loopnum = 0;
 		my->status = TS_INIT;
 		my->targets = NULL;
@@ -79,8 +79,8 @@ EXPORT int create_shaper(OBJECT **obj, OBJECT *parent)
 
 static int shaper_open(OBJECT *obj)
 {
-	char1024 fname="";
-	char32 flags="r";
+	char1024 fname("");
+	char32 flags("r");
 	TAPEFUNCS *fns;
 	struct shaper *my = OBJECTDATA(obj,struct shaper);
 	
@@ -88,7 +88,7 @@ static int shaper_open(OBJECT *obj)
 //	if (sscanf(my->file,"%32[^:]:%1024[^:]:%[^:]",type,fname,flags)==1)
 //	{
 		/* filename is file by default */
-		strcpy(fname,my->file);
+		fname = my->file;
 //		strcpy(type,"file");
 //	}
 
@@ -96,7 +96,7 @@ static int shaper_open(OBJECT *obj)
 	if (strcmp(fname,"")==0)
 
 		/* use object name-id as default file name */
-		sprintf(fname,"%s-%d.%s",obj->parent->oclass->name,obj->parent->id, (char*)my->filetype);
+		fname.format("%s-%d.%s",obj->parent->oclass->name,obj->parent->id, (const char*)my->filetype);
 
 	/* if type is file or file is stdin */
 	fns = get_ftable(my->mode);
@@ -197,12 +197,12 @@ EXPORT TIMESTAMP sync_shaper(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 		/* build target list */
 		if (my->targets==NULL && my->group[0]!='\0')
 		{
-			FINDLIST *object_list = gl_find_objects(FL_GROUP,(char*)my->group);
+			FINDLIST *object_list = gl_find_objects(FL_GROUP,(const char*)my->group);
 			OBJECT *item=NULL;
 			int n=0;
 			if (object_list==NULL || object_list->hit_count<=0)
 			{
-				gl_warning("shaper group '%s' is empty", (char*)my->group);
+				gl_warning("shaper group '%s' is empty", (const char*)my->group);
 				my->status=TS_DONE;
 				return TS_NEVER;
 			}
@@ -241,7 +241,7 @@ EXPORT TIMESTAMP sync_shaper(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 					else
 						gl_warning("object %s:%d property %s is not a double", item->oclass->name,item->id, prop->name);
 				} else {
-					gl_error("object %s:%d property %s not found in object %s", obj->oclass->name,obj->id, (char*)my->property, item->oclass->name,item->id);
+					gl_error("object %s:%d property %s not found in object %s", obj->oclass->name,obj->id, (const char*)my->property, item->oclass->name,item->id);
 				}
 			}
 		}
@@ -276,7 +276,7 @@ EXPORT TIMESTAMP sync_shaper(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 	}
 	obj->clock = t0;
 	if(t1 == 0){
-		gl_error("shaper:%i will return t1==0 ~ check the shaper's target property, \"%s\"", obj->id, (char*)my->property);
+		gl_error("shaper:%i will return t1==0 ~ check the shaper's target property, \"%s\"", obj->id, (const char*)my->property);
 	}
 	return t1!=TS_NEVER?-t1:TS_NEVER; /* negative indicates a "soft" event which is only considered for stepping, not for stopping */
 }

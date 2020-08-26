@@ -399,16 +399,17 @@ STATUS GldGlobals::init(void)
 	global_version_patch = version_patch();
 	global_version_build = version_build();
 	strncpy(global_version_branch,version_branch(),sizeof(global_version_branch));
-	strcpy(global_datadir,global_execdir);
-	char *bin = strstr(global_datadir,"/bin");
-	if ( bin ) *bin = '\0';
-	strcat(global_datadir,"/share/gridlabd");
+	global_datadir = global_execdir;
+	size_t bin = global_datadir.find("/bin");
+	global_datadir.copy_from("/share/gridlabd",bin);
 	sprintf(global_version,"%d.%d.%d-%d-%s",global_version_major,global_version_minor,global_version_patch,global_version_build,global_version_branch);
 
-	for (i = 0; i < sizeof(map) / sizeof(map[0]); i++){
+	for ( i = 0 ; i < sizeof(map) / sizeof(map[0]) ; i++ )
+	{
 		struct s_varmap *p = &(map[i]);
 		GLOBALVAR *var = global_create(p->name, p->type, p->addr, PT_ACCESS, p->access, p->description?PT_DESCRIPTION:0, p->description, NULL);
-		if(var == NULL){
+		if ( var == NULL )
+		{
 			output_error("global_init(): global variable '%s' registration failed", p->name);
 			/* TROUBLESHOOT
 				The global variable initialization process was unable to register
@@ -416,7 +417,9 @@ STATUS GldGlobals::init(void)
 				detailed explanation of the error.  Follow the troubleshooting for
 				that message and try again.
 			*/
-		} else {
+		} 
+		else 
+		{
 			var->prop->keywords = p->keys;
 			var->callback = p->callback;
 		}

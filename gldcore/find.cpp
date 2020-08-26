@@ -160,7 +160,7 @@ int compare(OBJECT *obj, FINDTYPE ftype, FINDOP op, void *value, char *propname)
 	case FT_CLASS: return obj->oclass->module!=NULL && compare_string((char*)obj->oclass->name,op,(char*)value);
 	case FT_ISA: return object_isa(obj,(char*)value);
 	case FT_MODULE: return ( obj->oclass->module!=NULL && compare_string((char*)obj->oclass->module->name,op,(char*)value) );
-	case FT_GROUPID: return compare_string((char*)obj->groupid,op,(char*)value);
+	case FT_GROUPID: return compare_string((const char*)obj->groupid,op,(const char*)value);
 	case FT_RANK: return compare_int((int64)obj->rank,op,(int64)*(int*)value);
 	case FT_CLOCK: return compare_int((int64)obj->clock,op,(int64)*(TIMESTAMP*)value);
 	//case FT_PROPERTY: return compare_property_alt(obj,propname,op,value);
@@ -928,7 +928,7 @@ int expression(PARSER, FINDPGM **pgm)
 	FINDOP op = EQ;
 	START;
 	if WHITE ACCEPT;
-	if (TERM(name(HERE,pname,sizeof(pname))) && WHITE,TERM(compare_op(HERE,&op)) && WHITE,TERM(token(HERE,pvalue,sizeof(pvalue))))
+	if (TERM(name(HERE,pname.resize(33),32)) && WHITE,TERM(compare_op(HERE,&op)) && WHITE,TERM(token(HERE,pvalue.resize(257),256)))
 	{
 		/* NOTE: this will seg fault if op's value is an invalid index! */
 		OBJECT _t;

@@ -121,7 +121,7 @@ private:
     std::string *tagtext;
     int get_taglist_size();
     int get_taglist(char *buffer,int size);
-    int add_taglist(char *buffer);
+    int add_taglist(const char *buffer);
     size_t log_id;
 
 public:

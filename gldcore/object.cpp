@@ -998,7 +998,7 @@ static int set_header_value(OBJECT *obj, const char *name, const char *value)
 	{
 		if ( strlen(value)<sizeof(obj->groupid) )
 		{
-			strcpy(obj->groupid,value);
+			obj->groupid = value;
 			return SUCCESS;
 		}
 		else
@@ -2152,7 +2152,7 @@ int object_saveall(FILE *fp) /**< the stream to write to */
 			PROPERTY *prop = NULL;
 			CLASS *oclass = obj->oclass;
 			MODULE *mod = oclass->module;
-			char32 oname = "(unidentified)";
+			char32 oname("(unidentified)");
 			OBJECT *parent = obj->parent;
 			OBJECT **topological_parent = object_get_object_by_name(obj,"topological_parent");
 			if ( mod )
@@ -3019,7 +3019,7 @@ FORECAST *forecast_create(OBJECT *obj, const char *specs)
 	output_warning("forecast_create(): description parsing not implemented");
 
 	/* copy the description */
-	strncpy(fc->specification,specs,sizeof(fc->specification));
+	fc->specification = specs;
 
 	return fc;
 }

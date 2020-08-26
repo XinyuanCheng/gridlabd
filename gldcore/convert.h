@@ -67,29 +67,11 @@ DEPRECATED int convert_from_int64(char *buffer, int size, void *data, PROPERTY *
 // Function: convert_to_int64
 DEPRECATED int convert_to_int64(const char *buffer, void *data, PROPERTY *prop);
 
-// Function: convert_from_char8
-DEPRECATED int convert_from_char8(char *buffer, int size, void *data, PROPERTY *prop);
-
-// Function: convert_to_char8
-DEPRECATED int convert_to_char8(const char *buffer, void *data, PROPERTY *prop);
-
-// Function: convert_from_char32
-DEPRECATED int convert_from_char32(char *buffer, int size, void *data, PROPERTY *prop);
-
-// Function: convert_to_char32
-DEPRECATED int convert_to_char32(const char *buffer, void *data, PROPERTY *prop);
-
-// Function: convert_from_char256
-DEPRECATED int convert_from_char256(char *buffer, int size, void *data, PROPERTY *prop);
-
-// Function: convert_to_char256
-DEPRECATED int convert_to_char256(const char *buffer, void *data, PROPERTY *prop);
-
 // Function: convert_from_char1024
-DEPRECATED int convert_from_char1024(char *buffer, int size, void *data, PROPERTY *prop);
+DEPRECATED int convert_from_varchar(char *buffer, int size, void *data, PROPERTY *prop);
 
 // Function: convert_to_char1024
-DEPRECATED int convert_to_char1024(const char *buffer, void *data, PROPERTY *prop);
+DEPRECATED int convert_to_varchar(const char *buffer, void *data, PROPERTY *prop);
 
 // Function: convert_from_object
 DEPRECATED int convert_from_object(char *buffer, int size, void *data, PROPERTY *prop);

@@ -67,7 +67,7 @@ int currdump::create(void)
 	runcount = 0;
 	mode = CDM_RECT;
 	interval = 0;
-	strcpy(filemode,"w");
+	filemode = "w";
 	maxcount = 1;
 	version = 0;
 	return 1;
@@ -87,9 +87,9 @@ int currdump::init(OBJECT *parent)
 		{
 			maxcount = 0; 
 		}
-		if ( strcmp(filemode,"") == 0 )
+		if ( filemode == "" )
 		{
-			strcpy(filemode,"a");
+			filemode = "a";
 		}
 		runtime = TS_NEVER;
 	}
@@ -99,9 +99,9 @@ int currdump::init(OBJECT *parent)
 		{
 			maxcount = 1;
 		}
-		if ( strcmp(filemode,"") == 0 )
+		if ( filemode == "" )
 		{
-			strcpy(filemode,"w");
+			filemode = "w";
 		}
 	}
 	if ( version < 0 || version > 2 )

@@ -63,10 +63,10 @@ EXPORT void *set_option(const char *name, void *pValue)
 /*******************************************************************
  * players 
  */
-EXPORT int open_player(struct player *my, char *fname, char *flags)
+EXPORT int open_player(struct player *my, const char *fname, const char *flags)
 {
 	//char *ff = gl_findfile(fname,NULL,FF_READ);
-	char *ff = fname;
+	const char *ff = fname;
 
 	/* "-" means stdin */
 	my->fp = (strcmp(fname,"-")==0?stdin:(ff?fopen(ff,flags):NULL));
@@ -107,7 +107,7 @@ EXPORT void close_player(struct player *my)
 #define MAPSIZE(N) ((N-1)/8+1)
 #define SET(X,B) ((X)[(B)/8]|=(1<<((B)&7)))
 #define ISSET(X,B) (((X)[(B)/8]&(1<<((B)&7)))==(1<<((B)&7)))
-char *file=NULL;
+const char *file=NULL;
 int linenum=0;
 static int setmap(char *spec, unsigned char *map, int size)
 {
@@ -194,13 +194,13 @@ static unsigned char *weekdaymap(char *spec)
 		return NULL;
 }
 
-EXPORT int open_shaper(struct shaper *my, char *fname, char *flags)
+EXPORT int open_shaper(struct shaper *my, const char *fname, const char *flags)
 {
 	char line[1024], group[256]="(unnamed)";
 	float sum=0, load=0, peak=0;
 	float scale[12][31][7][24];
 	//char *ff = gl_findfile(fname,NULL,FF_READ);
-	char *ff = fname;
+	const char *ff = fname;
 
 	/* clear everything */
 	memset(scale,0,sizeof(scale));
@@ -350,7 +350,7 @@ EXPORT void close_shaper(struct shaper *my)
 /*******************************************************************
  * recorders 
  */
-EXPORT int open_recorder(struct recorder *my, char *fname, char *flags)
+EXPORT int open_recorder(struct recorder *my, const char *fname, const char *flags)
 {
 	time_t now=time(NULL);
 	OBJECT *obj=OBJECTHDR(my);
@@ -402,7 +402,7 @@ EXPORT int open_recorder(struct recorder *my, char *fname, char *flags)
 	return 1;
 }
 
-EXPORT int write_recorder(struct recorder *my, char *timestamp, char *value)
+EXPORT int write_recorder(struct recorder *my, const char *timestamp, const char *value)
 { 
 	int count = fprintf(my->fp,"%s,%s\n", timestamp, value);
 	if (csv_keep_clean) fflush(my->fp);
@@ -428,7 +428,7 @@ EXPORT void close_recorder(struct recorder *my)
 /*******************************************************************
  * histograms 
  */
-EXPORT int open_histogram(histogram *my, char *fname, char *flags)
+EXPORT int open_histogram(histogram *my, const char *fname, const char *flags)
 {
 	time_t now=time(NULL);
 	OBJECT *obj=OBJECTHDR(my);
@@ -520,7 +520,7 @@ EXPORT void close_histogram(histogram *my)
 /*******************************************************************
  * collectors 
  */
-EXPORT int open_collector(struct collector *my, char *fname, char *flags)
+EXPORT int open_collector(struct collector *my, const char *fname, const char *flags)
 {
 	time_t now=time(NULL);
 
@@ -569,7 +569,7 @@ EXPORT int open_collector(struct collector *my, char *fname, char *flags)
 	return 1;
 }
 
-EXPORT int write_collector(struct collector *my, char *timestamp, char *value)
+EXPORT int write_collector(struct collector *my, const char *timestamp, const char *value)
 {
 	int count = fprintf(my->fp,"%s,%s\n", timestamp, value);
 	if (csv_keep_clean) fflush(my->fp);

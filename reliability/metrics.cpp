@@ -45,9 +45,9 @@ metrics::metrics(MODULE *module)
 /* Object creation is called once for each object that is created by the core */
 int metrics::create(void)
 {
-	customer_group[0] = '\0';
+	customer_group.erase();
 	module_metrics_obj = NULL;
-	metrics_oi[0] = '\0';
+	metrics_oi.erase();
 	metric_interval_dbl = 0.0;
 	report_interval_dbl = 31536000.0;	//Defaults to a year
 
@@ -189,11 +189,11 @@ int metrics::init(OBJECT *parent)
 		CalcIndices[index].MetricLoc = NULL;	//No address by default
 		
 		for (indexa=0; indexa<257; indexa++)	//+1 due to end \0
-			CalcIndices[index].MetricName[indexa]='\0';
+			CalcIndices[index].MetricName.set_at(indexa,'\0');
 	}
 
 	//Populate it up - copy it first so we don't destroy the original
-	metrics_oi.copy_to(work_metrics);
+	metrics_oi.copy_to(work_metrics,sizeof(work_metrics));
 
 	//Set initial pointers
 	startVal = work_metrics;
@@ -217,7 +217,7 @@ int metrics::init(OBJECT *parent)
 		while ((workVal<=endVal) && (indexa < 256))
 		{
 			//Copy the value in
-			CalcIndices[index].MetricName[indexa] = *workVal;
+			CalcIndices[index].MetricName.set_at(indexa,*workVal);
 
 			//Copy into secondary
 			metricbuffer[indexa] = *workVal;

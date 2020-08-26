@@ -10,8 +10,8 @@ EXPORT_PRECOMMIT(industrial);
 CLASS *industrial::oclass = NULL;
 industrial *industrial::defaults = NULL;
 
-char256 industrial::load_property_name = "base_power_";
-char1024 industrial::naics_data_file = "naics_data_file.csv";
+char256 industrial::load_property_name("base_power_");
+char1024 industrial::naics_data_file("naics_data_file.csv");
 naics *industrial::naics_data = NULL;
 
 industrial::industrial(MODULE *module)

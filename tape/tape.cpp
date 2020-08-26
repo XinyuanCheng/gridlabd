@@ -83,9 +83,9 @@ int32 flush_interval = 0;
 int csv_data_only = 0; /* enable this option to suppress addition of lines starting with # in CSV */
 int csv_keep_clean = 0; /* enable this option to keep data flushed at end of line */
 
-typedef int (*OPENFUNC)(void *, char *, char *);
+typedef int (*OPENFUNC)(void *, const char *, const char *);
 typedef char *(*READFUNC)(void *, char *, unsigned int);
-typedef int (*WRITEFUNC)(void *, char *, char *);
+typedef int (*WRITEFUNC)(void *, const char *, const char *);
 typedef int (*REWINDFUNC)(void *);
 typedef void (*CLOSEFUNC)(void *);
 typedef void *(*SETOPTIONCALL)(const char *name, void *value);
@@ -104,7 +104,8 @@ void set_csv_options(void)
 	}
 }
 
-TAPEFUNCS *get_ftable(char *mode){
+TAPEFUNCS *get_ftable(const char *mode)
+{
 	/* check what we've already loaded */
 	char256 modname;
 	TAPEFUNCS *fptr = funcs;
@@ -119,25 +120,29 @@ TAPEFUNCS *get_ftable(char *mode){
 	}
 	/* fptr = NULL */
 	fptr = (TAPEFUNCS*)malloc(sizeof(TAPEFUNCS));
-	if(fptr == NULL)
+	if ( fptr == NULL )
 	{
 		gl_error("get_ftable(char *mode='%s'): out of memory", mode);
 		return NULL; /* out of memory */
 	}
-	snprintf(modname, sizeof(modname), "tape_%s" DLEXT, mode);
+	modname.format("tape_%s" DLEXT, mode);
 	
-	if(gl_findfile(modname, NULL, 0|4, tpath,sizeof(tpath)) == NULL){
-		gl_error("unable to locate %s", (char*)modname);
+	if ( gl_findfile(modname, NULL, 0|4, tpath,sizeof(tpath)) == NULL )
+	{
+		gl_error("unable to locate %s", (const char*)modname);
 		return NULL;
 	}
 	lib = fptr->hLib = DLLOAD(tpath);
-	if(fptr->hLib == NULL){
-		gl_error("tape module: unable to load DLL for %s", (char*)modname);
+	if ( fptr->hLib == NULL )
+	{
+		gl_error("tape module: unable to load DLL for %s", (const char*)modname);
 		return NULL;
 	}
 	c = (CALLBACKS **)DLSYM(lib, "callback");
-	if(c)
+	if ( c )
+	{
 		*c = callback;
+	}
 
 	//	nonfatal ommission
 	ops = fptr->collector = (TAPEOPS*)malloc(sizeof(TAPEOPS));
@@ -211,9 +216,9 @@ EXPORT CLASS *init(CALLBACKS *fntable, void *module, int argc, char *argv[])
 
 	/* globals for the tape module*/
 #ifdef WIN32
-	sprintf(tape_gnuplot_path, "c:/Program Files/GnuPlot/bin/wgnuplot.exe");
+	tape_gnuplot_path.format("c:/Program Files/GnuPlot/bin/wgnuplot.exe");
 #else
-	sprintf(tape_gnuplot_path,"/usr/bin/gnuplot");
+	tape_gnuplot_path.format("/usr/bin/gnuplot");
 #endif
 	gl_global_create("tape::gnuplot_path",PT_char1024,&tape_gnuplot_path,NULL);
 	gl_global_create("tape::flush_interval",PT_int32,&flush_interval,NULL);
@@ -420,7 +425,7 @@ EXPORT int check(void)
 			if (gl_findfile(pData->file,NULL,F_OK,fpath,sizeof(fpath))==NULL)
 			{
 				errcount++;
-				gl_error("player %s (id=%d) uses the file '%s', which cannot be found", obj->name?obj->name:"(unnamed)", obj->id, (char*)pData->file);
+				gl_error("player %s (id=%d) uses the file '%s', which cannot be found", obj->name?obj->name:"(unnamed)", obj->id, (const char*)pData->file);
 			}
 		}
 	}
@@ -434,7 +439,7 @@ EXPORT int check(void)
 			if (gl_findfile(pData->file,NULL,F_OK,fpath,sizeof(fpath))==NULL)
 			{
 				errcount++;
-				gl_error("shaper %s (id=%d) uses the file '%s', which cannot be found", obj->name?obj->name:"(unnamed)", obj->id, (char*)pData->file);
+				gl_error("shaper %s (id=%d) uses the file '%s', which cannot be found", obj->name?obj->name:"(unnamed)", obj->id, (const char*)pData->file);
 			}
 		}
 	}
@@ -622,7 +627,7 @@ EXPORT SIMULATIONMODE interupdate(MODULE *module, TIMESTAMP t0, unsigned int64 d
 			/* See if we're in service */
 			if ((obj->in_svc_double <= gl_globaldeltaclock) && (obj->out_svc_double >= gl_globaldeltaclock))
 			{
-				strcpy(curr_value,my->next.value);
+				curr_value = my->next.value;
 
 				/* post the current value */
 				if ( t<=clock_val )
@@ -693,7 +698,7 @@ EXPORT SIMULATIONMODE interupdate(MODULE *module, TIMESTAMP t0, unsigned int64 d
 					/* Behave similar to "supersecond" players */
 					while ( t<=clock_val )
 					{
-						gl_set_value(obj->parent,GETADDR(obj->parent,my->target),my->next.value,my->target); /* pointer => int64 */
+						gl_set_value(obj->parent,GETADDR(obj->parent,my->target),my->next.value.get_string(),my->target); /* pointer => int64 */
 
 						/* read the next value */
 						player_read(obj);
@@ -813,7 +818,7 @@ EXPORT STATUS postupdate(MODULE *module, TIMESTAMP t0, unsigned int64 dt)
 					myrec->last.ns = rec_microseconds;
 
 					/*  Copy in the last value, just in case */
-					strcpy(myrec->last.value,value);
+					myrec->last.value = value;
 				}
 			}
 			/* Defaulted else - not in service */

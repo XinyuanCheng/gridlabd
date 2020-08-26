@@ -657,10 +657,12 @@ int controller::init(OBJECT *parent){
 				return 0;
 			}
 		}
-	} else if(control_mode == CN_DOUBLE_RAMP){
-		sprintf(aux_state, "is_AUX_on");
-		sprintf(heat_state, "is_HEAT_on");
-		sprintf(cool_state, "is_COOL_on");
+	} 
+	else if ( control_mode == CN_DOUBLE_RAMP )
+	{
+		aux_state = "is_AUX_on";
+		heat_state = "is_HEAT_on";
+		cool_state = "is_COOL_on";
 		if(fetch_property(&pHeatingSetpoint, (char *)(&heating_setpoint), parent) == 0) {
 			return 0;
 		}

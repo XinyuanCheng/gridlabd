@@ -142,7 +142,7 @@ int generator_controller::create(void)
 	total_hours_year = 0.0;		//0.0 = infinite hours
 	hours_run_this_year = 0.0;	//None run yet
 	scaling_factor = 0.2;		//Default value from an Olypen generator
-	runtime_year_end[0] = '\0';	//No date specified
+	runtime_year_end.erase();	//No date specified
 	license_premium = 0.0;		//No premium calculated
 	hours_in_year = 8760.0;		//Assumes normal year
 	op_and_maint_cost = 0.0;	//No O&M Cost
@@ -1763,7 +1763,7 @@ void generator_controller::parse_bid_curve(OBJECT *thisobj, TIMESTAMP t0)
 	{
 		//Set up the parsing values
 		plast = 0.0;
-		curr_ptr = bidding_curve_txt;
+		curr_ptr = bidding_curve_txt.get_string();
 
 		//Loop
 		for (index=0; index<(num_entries+1); index++)

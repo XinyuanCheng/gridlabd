@@ -56,10 +56,10 @@ histogram::histogram(MODULE *mod)
 			PT_int32, "limit", PADDR(limit),PT_DESCRIPTION,"the number of samples to write",
             NULL) < 1) GL_THROW("unable to publish properties in %s",__FILE__);
 		defaults = this;
-		memset(filename, 0, 1025);
-		memset(group, 0, 1025);
-		memset(bins, 0, 1025);
-		memset(property, 0, 33);
+		filename = "";
+		group = "";
+		bins = "";
+		property = "";
 		min = 0;
 		max = -1;
 		bin_count = -1;
@@ -71,8 +71,8 @@ histogram::histogram(MODULE *mod)
 		binctr = NULL;
 		prop_ptr = NULL;
 		next_count = t_count = next_sample = t_sample = TS_ZERO;
-		strcpy(mode, "file");
-		flags[0]='w';
+		mode = "file";
+		flags = "w";
     }
 }
 
@@ -202,8 +202,7 @@ void histogram::test_for_complex(char *tprop, char *tpart){
 			gl_error("Unable to resolve complex part for '%s'", property.get_string());
 			return;
 		}
-		char *last;
-		strtok_r(property, ".",&last); /* "quickly" replaces the dot with a space */
+		property.set_at(property.find('.'),' ');
 	}
 }
 
@@ -312,20 +311,23 @@ int histogram::init(OBJECT *parent)
 	 *	If a or b is not present, the bin will fill in a positve/negative infinity.
 	 */
 	{
-		char *cptr = bins;
+		char *cptr = bins.get_string();
 		char bincpy[1025];
 		int i = 0;
 		bin_count = 1; /* assume at least one */
 		/* would be better to count the number of times strtok succeeds, but this should work -mh */
 		//while(*cptr != 0){
-		for(cptr = bins; *cptr != 0; ++cptr){
-			if(*cptr == ',' && cptr[1] != 0){
+		for ( cptr = bins.get_string() ; *cptr != 0 ; ++cptr )
+		{
+			if ( *cptr == ',' && cptr[1] != 0 )
+			{
 				++bin_count;
 			}
 		//	++cptr;
 		}
 		bin_list = (BIN *)gl_malloc(sizeof(BIN) * bin_count);
-		if(bin_list == NULL){
+		if ( bin_list == NULL )
+		{
 			gl_error("Histogram malloc error: unable to alloc %i * %i bytes for %s", bin_count, sizeof(BIN), obj->name ? obj->name : "(anon. histogram)");
 			return 0;
 		}
@@ -367,14 +369,14 @@ int histogram::init(OBJECT *parent)
 //	if (sscanf(filename,"%32[^:]:%1024[^:]:%[^:]",ftype,fname,flags)==1)
 //	{
 		/* filename is file by default */
-		strcpy(fname,filename);
+		fname = filename;
 //		strcpy(ftype,"file");
 //	}
 	/* if no filename given */
-	if (strcmp(fname,"")==0)
+	if ( fname == "" )
 
 		/* use object name-id as default file name */
-		sprintf(fname,"%s-%d.%s",obj->parent->oclass->name,obj->parent->id, ftype.get_string());
+		fname.format("%s-%d.%s",obj->parent->oclass->name,obj->parent->id, ftype.get_string());
 
 	/* if type is file or file is stdin */
 	tf = get_ftable(mode);

@@ -15,7 +15,7 @@
 /*******************************************************************
  * players 
  */
-int file_open_player(struct player *my, char *fname, char *flags)
+int file_open_player(struct player *my, const char *fname, const char *flags)
 {
 	char ff[1024];
 
@@ -56,7 +56,7 @@ void file_close_player(struct player *my)
 #define MAPSIZE(N) ((N-1)/8+1)
 #define SET(X,B) ((X)[(B)/8]|=(1<<((B)&7)))
 #define ISSET(X,B) (((X)[(B)/8]&(1<<((B)&7)))==(1<<((B)&7)))
-char *file=NULL;
+const char *file=NULL;
 int linenum=0;
 static void setmap(char *spec, unsigned char *map, int size)
 {
@@ -132,7 +132,7 @@ static unsigned char *weekdaymap(char *spec)
 	return weekdays;
 }
 
-int file_open_shaper(struct shaper *my, char *fname, char *flags)
+int file_open_shaper(struct shaper *my, const char *fname, const char *flags)
 {
 	char line[1024], group[256]="(unnamed)";
 	float sum=0, load=0, peak=0;
@@ -235,7 +235,7 @@ int file_open_shaper(struct shaper *my, char *fname, char *flags)
 	return 1;
 }
 
-char *file_read_shaper(struct shaper *my,char *buffer,unsigned int size)
+char *file_read_shaper(struct shaper *my, char *buffer, unsigned int size)
 {
 	return fgets(buffer,size,my->fp);
 }
@@ -252,7 +252,7 @@ void file_close_shaper(struct shaper *my)
 /*******************************************************************
  * recorders 
  */
-int file_open_recorder(struct recorder *my, char *fname, char *flags)
+int file_open_recorder(struct recorder *my, const char *fname, const char *flags)
 {
 	time_t now=time(NULL);
 	OBJECT *obj=OBJECTHDR(my);
@@ -270,7 +270,7 @@ int file_open_recorder(struct recorder *my, char *fname, char *flags)
 	my->samples=0;
 
 	/* put useful header information in file first */
-	fprintf(my->fp,"# file...... %s\n", (char*)my->file);
+	fprintf(my->fp,"# file...... %s\n", (const char*)my->file);
 	fprintf(my->fp,"# date...... %s", asctime(localtime(&now)));
 #ifdef WIN32
 	fprintf(my->fp,"# user...... %s\n", getenv("USERNAME"));
@@ -280,7 +280,7 @@ int file_open_recorder(struct recorder *my, char *fname, char *flags)
 	fprintf(my->fp,"# host...... %s\n", getenv("HOST"));
 #endif
 	fprintf(my->fp,"# target.... %s %d\n", obj->parent->oclass->name, obj->parent->id);
-	fprintf(my->fp,"# trigger... %s\n", my->trigger[0]=='\0'?"(none)":(char*)my->trigger);
+	fprintf(my->fp,"# trigger... %s\n", my->trigger[0]=='\0'?"(none)":(const char*)my->trigger);
 	fprintf(my->fp,"# interval.. %lld\n", my->interval);
 	fprintf(my->fp,"# limit..... %d\n", my->limit);
 	fprintf(my->fp,"# timestamp,%s\n", my->property);
@@ -288,7 +288,7 @@ int file_open_recorder(struct recorder *my, char *fname, char *flags)
 	return 1;
 }
 
-int file_write_recorder(struct recorder *my, char *timestamp, char *value)
+int file_write_recorder(struct recorder *my, const char *timestamp, const char *value)
 { 
 	return fprintf(my->fp,"%s,%s\n", timestamp, value);
 }
@@ -306,7 +306,7 @@ void file_flush_recorder(struct recorder *my)
 /*******************************************************************
  * collectors 
  */
-int file_open_collector(struct collector *my, char *fname, char *flags)
+int file_open_collector(struct collector *my, const char *fname, const char *flags)
 {
 	unsigned int count=0;
 	time_t now=time(NULL);
@@ -324,7 +324,7 @@ int file_open_collector(struct collector *my, char *fname, char *flags)
 	my->samples=0;
 
 	/* put useful header information in file first */
-	count += fprintf(my->fp,"# file...... %s\n", (char*)my->file);
+	count += fprintf(my->fp,"# file...... %s\n", (const char*)my->file);
 	count += fprintf(my->fp,"# date...... %s", asctime(localtime(&now)));
 #ifdef WIN32
 	count += fprintf(my->fp,"# user...... %s\n", getenv("USERNAME"));
@@ -333,8 +333,8 @@ int file_open_collector(struct collector *my, char *fname, char *flags)
 	count += fprintf(my->fp,"# user...... %s\n", getenv("USER"));
 	count += fprintf(my->fp,"# host...... %s\n", getenv("HOST"));
 #endif
-	count += fprintf(my->fp,"# group..... %s\n", (char*)my->group);
-	count += fprintf(my->fp,"# trigger... %s\n", my->trigger[0]=='\0'?"(none)":(char*)my->trigger);
+	count += fprintf(my->fp,"# group..... %s\n", (const char*)my->group);
+	count += fprintf(my->fp,"# trigger... %s\n", my->trigger[0]=='\0'?"(none)":(const char*)my->trigger);
 	count += fprintf(my->fp,"# interval.. %lld\n", my->interval);
 	count += fprintf(my->fp,"# limit..... %d\n", my->limit);
 	count += fprintf(my->fp,"# property.. timestamp,%s\n", my->property);
@@ -342,7 +342,7 @@ int file_open_collector(struct collector *my, char *fname, char *flags)
 	return count;
 }
 
-int file_write_collector(struct collector *my, char *timestamp, char *value)
+int file_write_collector(struct collector *my, const char *timestamp, const char *value)
 {
 	return fprintf(my->fp,"%s,%s\n", timestamp, value);
 }

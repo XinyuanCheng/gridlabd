@@ -13,12 +13,12 @@ EXPORT_DESTROY(database);
 CLASS *database::oclass = NULL;
 database *database::defaults = NULL;
 
-char32 database::connection_protocol = "http";
-char32 database::default_username = "gridlabd";
-char32 database::default_password = "gridlabd";
-char256 database::default_hostname = "localhost";
+char32 database::connection_protocol("http");
+char32 database::default_username("gridlabd");
+char32 database::default_password("gridlabd");
+char256 database::default_hostname("localhost");
 int32 database::default_port = 8086;
-char256 database::default_database = "gridlabd";
+char256 database::default_database("gridlabd");
 bool database::synchronous_postdata = false;
 
 static FILE *devnull = NULL;
@@ -61,19 +61,19 @@ database::database(MODULE *module)
         }
 
         gl_global_create("influxdb::default_username",
-            PT_char32,database::default_username.get_addr(),
+            PT_char32,&database::default_username,
             PT_ACCESS,PA_PUBLIC,
             PT_DESCRIPTION,"default InfluxDB username",
             NULL);
 
         gl_global_create("influxdb::default_password",
-            PT_char32,database::default_password.get_addr(),
+            PT_char32,&database::default_password,
             PT_ACCESS,PA_PUBLIC,
             PT_DESCRIPTION,"default InfluxDB password",
             NULL);
 
         gl_global_create("influxdb::default_hostname",
-            PT_char256,database::default_hostname.get_addr(),
+            PT_char256,&database::default_hostname,
             PT_ACCESS,PA_PUBLIC,
             PT_DESCRIPTION,"default InfluxDB hostname",
             NULL);
@@ -85,13 +85,13 @@ database::database(MODULE *module)
             NULL);
 
         gl_global_create("influxdb::default_database",
-            PT_char256,database::default_database.get_addr(),
+            PT_char256,&database::default_database,
             PT_ACCESS,PA_PUBLIC,
             PT_DESCRIPTION,"default InfluxDB database",
             NULL);
 
         gl_global_create("influxdb::connection_protocol",
-            PT_char32,database::connection_protocol.get_addr(),
+            PT_char32,&database::connection_protocol,
             PT_ACCESS,PA_PUBLIC,
             PT_DESCRIPTION,"default InfluxDB connection protocol",
             NULL);
@@ -524,7 +524,7 @@ int database::get_taglist(char *buffer, int size)
     return pos;
 }
 
-int database::add_taglist(char *buffer)
+int database::add_taglist(const char *buffer)
 {
     char value[1024];
     int len = strlen(buffer);
@@ -650,7 +650,8 @@ const char *database::get_header_value(OBJECT *obj, const char *item, char *buff
     }
     else if ( strcmp(item,"groupid") == 0 )
     {
-        char *c, *p = buffer;
+        const char *c;
+        char *p = buffer;
         for ( c = obj->groupid ; *c != '\0' && p < buffer+len-1 ; c++ )
         {
             if ( strchr(", \t",*c) )

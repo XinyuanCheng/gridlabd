@@ -509,7 +509,7 @@ int auction::init_statistics()
 			// enqueue a new STATPROP instance
 			sp = (STATISTIC *)malloc(sizeof(STATISTIC));
 			memcpy(sp, &statprop, sizeof(STATISTIC));
-			strcpy(sp->statname, prop->name);
+			sp->statname = prop->name;
 			sp->prop = prop;
 			sp->value = 0;
 			if(stats == 0){

@@ -271,7 +271,7 @@ EXPORT void close_shaper(struct shaper *my)
  * recorders 
  */
 
-EXPORT void write_default_plot_commands_rec(struct recorder *my, char32 extension)
+EXPORT void write_default_plot_commands_rec(struct recorder *my, char* extension)
 {
 	char fname[sizeof(char32)];
 	char type[sizeof(char32)];
@@ -292,7 +292,7 @@ EXPORT void write_default_plot_commands_rec(struct recorder *my, char32 extensio
 		j= strlen(my->columns)>0 ? 0: fprintf(my->fp, "set xdata time;\n");
 		fprintf(my->fp, "set datafile separator \",\";\n");
 		if(my->output != SCR){
-			fprintf(my->fp, "set output \"%s.%s\"; \n", fname,extension.get_string());
+			fprintf(my->fp, "set output \"%s.%s\"; \n", fname, extension);
 		}
 		fprintf(my->fp, "show output; \n");
 		fprintf(my->fp, "set timefmt \"%%Y-%%m-%%d %%H:%%M:%%S\";\n");
@@ -517,7 +517,7 @@ EXPORT void close_recorder(struct recorder *my)
  * collectors 
  */
 
-EXPORT void write_default_plot_commands_col(struct collector *my, char32 extension)
+EXPORT void write_default_plot_commands_col(struct collector *my, char* extension)
 {
 	char fname[sizeof(char32)];
 	char type[sizeof(char32)];
@@ -533,7 +533,7 @@ EXPORT void write_default_plot_commands_col(struct collector *my, char32 extensi
 	if (my->plotcommands[0]=='\0' || strcmp(my->plotcommands,"")==0) {
 		j= strlen(my->columns)>0 ? 0: fprintf(my->fp, "set xdata time;\n");
 		fprintf(my->fp, "set datafile separator \",\";\n");
-		fprintf(my->fp, "set output \"%s.%s\"; \n", fname,extension.get_string());
+		fprintf(my->fp, "set output \"%s.%s\"; \n", fname, extension);
 		fprintf(my->fp, "show output; \n");
 		fprintf(my->fp, "set timefmt \"%%Y-%%m-%%d %%H:%%M:%%S\";\n");
 		j = strlen(my->columns)>0  ? 0: fprintf(my->fp, "plot \'-\' using 1:2 with lines;\n");

@@ -73,17 +73,17 @@ EXPORT int create_recorder(OBJECT **obj, OBJECT *parent)
 		struct recorder *my = OBJECTDATA(*obj,struct recorder);
 		last_recorder = *obj;
 		gl_set_parent(*obj,parent);
-		strcpy(my->file,"");
-		strcpy(my->multifile,"");
-		strcpy(my->filetype,"txt");
-		strcpy(my->delim,",");
+		my->file = "";
+		my->multifile = "";
+		my->filetype = "txt";
+		my->delim = ",";
 		// my->interval = -1;  // transients only 
 		my->last.ts = -1;
 		my->last.ns = -1;
-		strcpy(my->last.value,"");
+		my->last.value = "";
 		my->samples = 0;
 		my->status = TS_INIT;
-		strcpy(my->plotcommands,"");
+		my->plotcommands = "";
 		my->target = NULL;
 		my->property = NULL;
 		my->property_len = 0;
@@ -96,7 +96,7 @@ EXPORT int create_recorder(OBJECT **obj, OBJECT *parent)
 
 static int recorder_open(OBJECT *obj)
 {
-	char32 flags="w";
+	char32 flags("w");
 	TAPEFUNCS *f = 0;
 	struct recorder *my = OBJECTDATA(obj,struct recorder);
 	int retvalue;
@@ -118,7 +118,7 @@ static int recorder_open(OBJECT *obj)
 	if (strcmp(my->file,"")==0)
 	{
 		/* use object name-id as default file name */
-		sprintf(my->file,"%s-%d.%s",obj->parent->oclass->name,obj->parent->id, (char*)my->filetype);
+		my->file.format("%s-%d.%s",obj->parent->oclass->name,obj->parent->id, (const char*)my->filetype);
 	}
 
 	/* open multiple-run input file & temp output file */
@@ -129,17 +129,17 @@ static int recorder_open(OBJECT *obj)
 			gl_error("transient recorders cannot use multi-run output files");
 			return 0;
 		}
-		sprintf(my->multitempfile, "temp_%s", (char*)my->file);
+		my->multitempfile.format("temp_%s", (const char*)my->file);
 		my->multifp = fopen(my->multitempfile, "w");
 		if(my->multifp == NULL){
-			gl_error("unable to open \'%s\' for multi-run output", (char*)my->multitempfile);
+			gl_error("unable to open \'%s\' for multi-run output", (const char*)my->multitempfile);
 		} else {
 			time_t now=time(NULL);
 
 			my->inputfp = fopen(my->multifile, "r");
 
 			// write header into temp file
-			fprintf(my->multifp,"# file...... %s\n", (char*)my->file);
+			fprintf(my->multifp,"# file...... %s\n", (const char*)my->file);
 			fprintf(my->multifp,"# date...... %s", asctime(localtime(&now)));
 #ifdef WIN32
 			fprintf(my->multifp,"# user...... %s\n", getenv("USERNAME"));
@@ -149,7 +149,7 @@ static int recorder_open(OBJECT *obj)
 			fprintf(my->multifp,"# host...... %s\n", getenv("HOST"));
 #endif
 			fprintf(my->multifp,"# target.... %s %d\n", obj->parent->oclass->name, obj->parent->id);
-			fprintf(my->multifp,"# trigger... %s\n", my->trigger[0]=='\0'?"(none)":(char*)my->trigger);
+			fprintf(my->multifp,"# trigger... %s\n", my->trigger[0]=='\0'?"(none)":(const char*)my->trigger);
 			fprintf(my->multifp,"# interval.. %lld\n", my->interval);
 			fprintf(my->multifp,"# limit..... %d\n", my->limit);
 			fprintf(my->multifp,"# flush..... %d\n", my->flush);
@@ -161,9 +161,9 @@ static int recorder_open(OBJECT *obj)
 			char *data;
 			int get_col = 0;
 			do{
-				if(0 != fgets(inbuffer, 1024, my->inputfp)){
-					char *end = strchr(inbuffer, '\n');
-					data = inbuffer+strlen("# file...... ");
+				if(0 != fgets(inbuffer.resize(1025), 1024, my->inputfp)){
+					char *end = strchr(inbuffer.get_string(), '\n');
+					data = inbuffer.get_string() + strlen("# file...... ");
 					if(end != 0){
 						*end = 0; // trim the trailing newline
 					}
@@ -179,9 +179,9 @@ static int recorder_open(OBJECT *obj)
 					} else if(strncmp(inbuffer, "# target", strlen("# target")) == 0){
 						// verify same target
 						char256 target;
-						sprintf(target, "%s %d", obj->parent->oclass->name, obj->parent->id);
+						target.format("%s %d", obj->parent->oclass->name, obj->parent->id);
 						if(0 != strncmp(target, data, strlen(data))){
-							gl_error("recorder:%i: re-recording target mismatch: was %s, now %s", obj->id, data, (char*)target);
+							gl_error("recorder:%i: re-recording target mismatch: was %s, now %s", obj->id, data, (const char*)target);
 						}
 					} else if(strncmp(inbuffer, "# trigger", strlen("# trigger")) == 0){
 						// verify same trigger, or absence thereof
@@ -207,12 +207,12 @@ static int recorder_open(OBJECT *obj)
 						get_col = 1;
 					}
 				} else {
-					gl_error("error reading multi-read input file \'%s\'", (char*)my->multifile);
+					gl_error("error reading multi-read input file \'%s\'", (const char*)my->multifile);
 					break;
 				}
 			} while(inbuffer[0] == '#' && get_col == 0);
 			// get full column list
-			if(0 != fgets(inbuffer, 1024, my->inputfp)){
+			if(0 != fgets(inbuffer.resize(1025), 1024, my->inputfp)){
 				int rep=0;
 				int replen = (int)strlen("# repetition");
 				int len, lenmax = 1024, i = 0;
@@ -224,8 +224,8 @@ static int recorder_open(OBJECT *obj)
 					rep = atoi(inbuffer + replen + 1); // skip intermediate space
 					++rep;
 					fprintf(my->multifp, "# repetition %i\n", rep);
-					fgets(inbuffer, 1024, my->inputfp);
-					trim = strchr(inbuffer, '\n');
+					fgets(inbuffer.resize(1025), 1024, my->inputfp);
+					trim = strchr(inbuffer.get_string(), '\n');
 					if(trim) *trim = 0;
 				} else { // invalid input file or somesuch, we could error ... or we can trample onwards with our output file.
 					rep = 0;
@@ -233,17 +233,17 @@ static int recorder_open(OBJECT *obj)
 				}
 				// following block matches below
 				while(tprop != NULL){
-					sprintf(shortstr, ",%s(%i)", tprop->name, rep);
+					shortstr.format(",%s(%i)", tprop->name, rep);
 					len = (int)strlen(shortstr);
 					if(len > lenmax){
 						gl_error("multi-run recorder output full property list is larger than the buffer, please start a new file!");
 						break; // will still print everything up to this one
 					}
-					strncpy(propstr+i, shortstr, len+1);
+					strncpy(propstr.get_string()+i, shortstr, len+1);
 					i += len;
 					tprop = tprop->next;
 				}
-				fprintf(my->multifp, "%s%s\n", (char*)inbuffer, (char*)propstr);
+				fprintf(my->multifp, "%s%s\n", (const char*)inbuffer, (const char*)propstr);
 			}
 		} else { /* new file, so write repetition & properties with (0) */
 			char1024 propstr, shortstr;
@@ -251,23 +251,23 @@ static int recorder_open(OBJECT *obj)
 			PROPERTY *tprop = my->target;
 			fprintf(my->multifp, "# repetition 0\n");
 			// no string from previous runs to append new props to
-			sprintf(propstr, "# timestamp");
+			propstr.format("# timestamp");
 			len = (int)strlen(propstr);
 			lenmax-=len;
 			i = len;
 			// following block matches above
 			while(tprop != NULL){
-				sprintf(shortstr, ",%s(0)", tprop->name);
+				shortstr.format(",%s(0)", tprop->name);
 				len = (int)strlen(shortstr);
 				if(len > lenmax){
 					gl_error("multi-run recorder output full property list is larger than the buffer, please start a new file!");
 					break; // will still print everything up to this one
 				}
-				strncpy(propstr+i, shortstr, len+1);
+				strncpy(propstr.get_string()+i, shortstr, len+1);
 				i += len;
 				tprop = tprop->next;
 			}
-			fprintf(my->multifp, "%s\n", (char*)propstr);
+			fprintf(my->multifp, "%s\n", (const char*)propstr);
 		}
 	}
 
@@ -300,10 +300,10 @@ static int recorder_open(OBJECT *obj)
 	switch ( my->header_units )
 	{
 	case HU_DEFAULT:
-		strcpy(my->out_property, my->property);
+		my->out_property = my->property;
 		break;
 	case HU_ALL:
-		strcpy(unit_buffer, my->property);
+		strncpy(unit_buffer,my->property,sizeof(unit_buffer)-1);
 		for ( token = strtok_s(unit_buffer,",",&last_token) ; token != NULL ; fmt_count++, token = strtok_s(NULL, ",",&last_token) )
 		{
 			unit = 0;
@@ -337,12 +337,12 @@ static int recorder_open(OBJECT *obj)
 			// print the property, and if there is one, the unit
 			if ( unit != NULL )
 			{
-				sprintf(my->out_property+offset, "%s%s[%s]", (first ? "" : ","), propstr, (unitstr[0] ? unitstr : unit->name));
+				sprintf(my->out_property.get_string()+offset, "%s%s[%s]", (first ? "" : ","), propstr, (unitstr[0] ? unitstr : unit->name));
 				offset += strlen(propstr) + (first ? 0 : 1) + 2 + strlen(unitstr[0] ? unitstr : unit->name);
 			} 
 			else 
 			{
-				sprintf(my->out_property+offset, "%s%s", (first ? "" : ","), propstr);
+				sprintf(my->out_property.get_string()+offset, "%s%s", (first ? "" : ","), propstr);
 				offset += strlen(propstr) + (first ? 0 : 1);
 			}
 			first = 0;
@@ -358,7 +358,7 @@ static int recorder_open(OBJECT *obj)
 				return 0;
 			}
 			// print just the property, regardless of type or explicitly declared property
-			sprintf(my->out_property+offset, "%s%s", (first ? "" : ","), propstr);
+			sprintf(my->out_property.get_string()+offset, "%s%s", (first ? "" : ","), propstr);
 			offset += strlen(propstr) + (first ? 0 : 1);
 			first = 0;
 		}
@@ -386,7 +386,7 @@ static int recorder_open(OBJECT *obj)
 	return my->ops->open(my, my->file, flags);
 }
 
-static int write_recorder(struct recorder *my, char *ts, char *value)
+static int write_recorder(struct recorder *my, const char *ts, const char *value)
 {
 	int rc=my->ops->write(my, ts, value);
 	if ( (my->flush==0 || (my->flush>0 && gl_globalclock%my->flush==0)) && my->ops->flush!=NULL )  
@@ -401,7 +401,7 @@ static void close_recorder(struct recorder *my)
 	}
 	if(my->multifp){
 		if(0 != fclose(my->multifp)){
-			gl_error("unable to close multi-run temp file \'%s\'", (char*)my->multitempfile);
+			gl_error("unable to close multi-run temp file \'%s\'", (const char*)my->multitempfile);
 			perror("fclose(): ");
 		}
 
@@ -410,12 +410,12 @@ static void close_recorder(struct recorder *my)
 		if(my->inputfp != NULL){
 			fclose(my->inputfp);
 			if(0 != remove(my->multifile)){ // old file
-				gl_error("unable to remove out-of-data multi-run file \'%s\'", (char*)my->multifile);
+				gl_error("unable to remove out-of-data multi-run file \'%s\'", (const char*)my->multifile);
 				perror("remove(): ");
 			}
 		}
 		if(0 != rename(my->multitempfile, my->multifile)){
-			gl_error("unable to rename multi-run file \'%s\' to \'%s\'", (char*)my->multitempfile, (char*)my->multifile);
+			gl_error("unable to rename multi-run file \'%s\' to \'%s\'", (const char*)my->multitempfile, (const char*)my->multifile);
 			perror("rename(): ");
 		}
 		
@@ -431,7 +431,7 @@ static TIMESTAMP recorder_write(OBJECT *obj)
 		if (my->last.ts>TS_ZERO)
 		{
 			time_t t = (time_t)(my->last.ts);
-			if ( my->strftime_format[0]==0 || strftime(ts,sizeof(ts),(char*)(my->strftime_format),localtime(&t))==0 )
+			if ( my->strftime_format[0]==0 || strftime(ts,sizeof(ts),(const char*)(my->strftime_format),localtime(&t))==0 )
 			{
 				DATETIME dt;
 				gl_localtime(my->last.ts,&dt);
@@ -461,12 +461,13 @@ static TIMESTAMP recorder_write(OBJECT *obj)
 		char *in_ts = 0;
 		char *in_tok = 0;
 
-		memset(inbuffer, 0, sizeof(inbuffer));
+		inbuffer = "";
 		
 		if(my->inputfp != NULL){
 			// read line
 			do{
-				if(0 == fgets(inbuffer, 1024, my->inputfp)){
+				if ( fgets(inbuffer.resize(1025), 1024, my->inputfp) == 0 )
+				{
 					if(feof(my->inputfp)){
 						// if there is no more data to append rows to, we're done with the aggregate 
 						//fclose(my->multifp); // happens in close()
@@ -483,7 +484,7 @@ static TIMESTAMP recorder_write(OBJECT *obj)
 			
 			// NOTE: this is not thread safe!
 			// split on first comma
-			in_ts = strtok_s(inbuffer, ",\n", &lasts);
+			in_ts = strtok_s(inbuffer.get_string(), ",\n", &lasts);
 			in_tok = strtok_s(NULL, "\n", &lasts);
 
 			if(in_ts == NULL){
@@ -495,12 +496,12 @@ static TIMESTAMP recorder_write(OBJECT *obj)
 			if(strcmp(in_ts, ts) != 0){
 				gl_warning("timestamp mismatch between current input line and simulation time");
 			}
-			sprintf(outbuffer, "%s,%s", in_tok, (char*)my->last.value);
+			outbuffer.format("%s,%s", in_tok, (const char*)my->last.value);
 		} else { // no input file ~ write normal output
-			strcpy(outbuffer, my->last.value);
+			outbuffer = my->last.value;
 		}
 		// fprintf 
-		fprintf(my->multifp, "%s,%s\n", ts, (char*)outbuffer);
+		fprintf(my->multifp, "%s,%s\n", ts, (const char*)outbuffer);
 	}
 	return TS_NEVER;
 }
@@ -590,9 +591,9 @@ PROPERTY *link_properties(struct recorder *rec, OBJECT *obj, char *property_list
 
 		// everything that looks like a property name, then read units up to ]
 		while ( isspace(*item) ) item++;
-		if ( sscanf(item,"%255[A-Za-z0-9_.][%255[^]\n,]]", (char*)pstr, (char*)ustr) > 1 )
+		if ( sscanf(item,"%255[A-Za-z0-9_.][%255[^]\n,]]", pstr.resize(256), ustr.resize(256)) > 1 )
 		{
-			char *format = strchr(ustr,':');
+			char *format = strchr(ustr.get_string(),':');
 			if ( format )
 			{
 				*format++ = '\0';
@@ -611,12 +612,12 @@ PROPERTY *link_properties(struct recorder *rec, OBJECT *obj, char *property_list
 				unit = gl_find_unit(ustr);
 				if ( unit == NULL )
 				{
-					gl_error("recorder:%d: unable to find unit '%s' for property '%s'",obj->id, (char*)ustr,(char*)pstr);
+					gl_error("recorder:%d: unable to find unit '%s' for property '%s'",obj->id, (const char*)ustr,(const char*)pstr);
 					free(list);
 					return NULL;
 				}
 			}
-			item = pstr;
+			item = pstr.get_string();
 		}
 		prop = (PROPERTY*)malloc(sizeof(PROPERTY));
 		if ( prop == NULL )
@@ -665,7 +666,7 @@ PROPERTY *link_properties(struct recorder *rec, OBJECT *obj, char *property_list
 		}
 		else if(unit != NULL && 0 == gl_convert_ex(target->unit, unit, &scale))
 		{
-			gl_error("recorder:%d: unable to convert property '%s' units to '%s'", obj->id, item, (char*)ustr);
+			gl_error("recorder:%d: unable to convert property '%s' units to '%s'", obj->id, item, (const char*)ustr);
 			free(list);
 			return NULL;
 		}
@@ -856,7 +857,7 @@ EXPORT TIMESTAMP sync_recorder(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 	struct recorder *my = OBJECTDATA(obj,struct recorder);
 	typedef enum {NONE='\0', LT='<', EQ='=', GT='>'} COMPAREOP;
 	COMPAREOP comparison;
-	char1024 buffer = "";
+	char1024 buffer("");
 	
 	if (my->status==TS_DONE)
 	{
@@ -866,7 +867,7 @@ EXPORT TIMESTAMP sync_recorder(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 
 	if(obj->parent == NULL){
 		char tb[32];
-		sprintf(buffer, "'%s' lacks a parent object", obj->name ? obj->name : (sprintf(tb, "recorder:%i", obj->id),tb));
+		buffer.format("'%s' lacks a parent object", obj->name ? obj->name : (snprintf(tb,sizeof(tb),"recorder:%i", obj->id),tb));
 		close_recorder(my);
 		my->status = TS_ERROR;
 		goto Error;
@@ -884,7 +885,7 @@ EXPORT TIMESTAMP sync_recorder(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 	}
 	if (my->target==NULL)
 	{
-		sprintf(buffer,"'%s' contains a property of %s %d that is not found", my->property, obj->parent->oclass->name, obj->parent->id);
+		buffer.format("'%s' contains a property of %s %d that is not found", my->property, obj->parent->oclass->name, obj->parent->id);
 		close_recorder(my);
 		my->status = TS_ERROR;
 		goto Error;
@@ -899,19 +900,19 @@ EXPORT TIMESTAMP sync_recorder(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 			if (my->last.ns == 0)
 			{
 				recorder_write(obj);
-				my->last.value[0] = 0; // once it's been finalized, dump it
+				my->last.value = ""; // once it's been finalized, dump it
 			}
 			else	//Just dump it, we already recorded this "timestamp"
-				my->last.value[0] = 0;
+				my->last.value = "";
 		}
 	}
 
 	/* update property value */
 	if ( ( my->target != NULL ) && ( my->interval <= 0 ) )
 	{	
-		if(read_properties(my, obj->parent,my->target,buffer,sizeof(buffer))==0)
+		if ( read_properties(my, obj->parent,my->target,buffer.resize(1025),1024) == 0 )
 		{
-			sprintf(buffer,"unable to read property '%s' of %s %d", my->property, obj->parent->oclass->name, obj->parent->id);
+			buffer.format("unable to read property '%s' of %s %d", my->property, obj->parent->oclass->name, obj->parent->id);
 			close_recorder(my);
 			my->status = TS_ERROR;
 		}
@@ -919,9 +920,9 @@ EXPORT TIMESTAMP sync_recorder(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 	else if ( ( my->target != NULL ) && ( my->interval > 0 ) )
 	{
 		if((t0 >=my->last.ts + my->interval) || ((t0 == my->last.ts) && (my->last.ns == 0))){
-			if(read_properties(my, obj->parent,my->target,buffer,sizeof(buffer))==0)
+			if ( read_properties(my, obj->parent,my->target,buffer.resize(1025),1024)==0)
 			{
-				sprintf(buffer,"unable to read property '%s' of %s %d", my->property, obj->parent->oclass->name, obj->parent->id);
+				buffer.format("unable to read property '%s' of %s %d", my->property, obj->parent->oclass->name, obj->parent->id);
 				close_recorder(my);
 				my->status = TS_ERROR;
 			}
@@ -964,7 +965,7 @@ EXPORT TIMESTAMP sync_recorder(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 			)
 
 		{
-			strncpy(my->last.value,buffer,sizeof(my->last.value));
+			my->last.value = buffer;
 
 			/* Deltamode-related check -- if we're ahead, don't overwrite this */
 			if (my->last.ts < t0)
@@ -974,13 +975,13 @@ EXPORT TIMESTAMP sync_recorder(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 				recorder_write(obj);
 			}
 		} else if ((my->interval > 0) && (my->last.ts == t0) && (my->last.ns == 0)){
-			strncpy(my->last.value,buffer,sizeof(my->last.value));
+			my->last.value = buffer;
 		}
 	}
 Error:
 	if (my->status==TS_ERROR)
 	{
-		gl_error("recorder %d %s\n",obj->id, (char*)buffer);
+		gl_error("recorder %d %s\n",obj->id, (const char*)buffer);
 		close_recorder(my);
 		my->status=TS_DONE;
 		return TS_NEVER;

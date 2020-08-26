@@ -850,10 +850,10 @@ int module_saveall(FILE *fp)
 int module_saveall_xml(FILE *fp){
 	MODULE *mod;
 	int count = 0;
-	char32 varname = "";
-	char32 value = "";
+	char32 varname("");
+	char32 value("");
 	GLOBALVAR *gvptr = NULL;
-	char1024 buffer;
+	char buffer[1024];
 
 	for (mod = first_module; mod != NULL; mod = mod->next){
 		char tname[67];
@@ -979,7 +979,7 @@ int module_saveall_xml_old(FILE *fp)
 	for (mod=first_module; mod!=NULL; mod=mod->next)
 	{
 		CLASS *oclass;
-		char32 varname="";
+		char32 varname("");
 		count += fprintf(fp,"\t\t<module> \n");
 		count += fprintf(fp,"\t\t\t<name>%s</name>\n",mod->name);
 		if(mod->major > 0)
@@ -1942,7 +1942,7 @@ int sched_getinfo(int n,char *buf, size_t sz)
 	}
 	if ( process_map[n].pid!=0 )
 	{
-		char *modelname = process_map[n].model;
+		const char *modelname = process_map[n].model;
 		int len;
 		char t[64]=" - ";
 		int is_defunct = 0;
@@ -2019,7 +2019,7 @@ STATUS sched_getinfo(int n,PROCINFO *pinfo)
 	pinfo->starttime = process_map[n].starttime;
 	pinfo->stoptime = process_map[n].stoptime;
 	pinfo->status = process_map[n].status;
-	strcpy(pinfo->model,process_map[n].model);
+	pinfo->model = process_map[n].model;
 	pinfo->start = process_map[n].start;
 	sched_unlock(n);
 	return SUCCESS;
@@ -2127,7 +2127,7 @@ MYPROCINFO *sched_allocate_procs(unsigned int n_threads, pid_t pid)
 		my_proc->list[t] = n;
 		process_map[n].pid = pid;
 		IN_MYCONTEXT output_debug("module.c/sched_allocate_procs(): assigned processor %d to pid %d\n", n, pid);
-		strncpy(process_map[n].model,global_modelname,sizeof(process_map[n].model)-1);
+		process_map[n].model = global_modelname;
 		process_map[n].start = time(NULL);
 		sched_unlock(n);
 

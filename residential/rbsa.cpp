@@ -26,17 +26,17 @@ double rbsa::default_nominal_voltage = 240.0;
 complex rbsa::default_nominal_voltage_A(240.0,0.0,A);
 complex rbsa::default_nominal_voltage_B(240.0,-120.0,A);
 complex rbsa::default_nominal_voltage_C(240.0,+120.0,A);
-char32 rbsa::default_weekday_code ="WEEKDAY";
-char32 rbsa::default_saturday_code ="SATURDAY";
-char32 rbsa::default_sunday_code ="SUNDAY";
-char32 rbsa::default_holiday_code ="HOLIDAY";
-char32 rbsa::default_month_heading = "Month";
-char32 rbsa::default_daytype_heading = "Daytype";
-char32 rbsa::default_hour_heading = "Hour";
-char1024 rbsa::temperature_variable_name = "temperature";
-char1024 rbsa::solargain_variable_name = "solar_direct";
-char1024 rbsa::price_variable_name = "energy_price";
-char1024 rbsa::occupancy_variable_name = "occupancy_fraction";
+char32 rbsa::default_weekday_code("WEEKDAY");
+char32 rbsa::default_saturday_code("SATURDAY");
+char32 rbsa::default_sunday_code("SUNDAY");
+char32 rbsa::default_holiday_code("HOLIDAY");
+char32 rbsa::default_month_heading("Month");
+char32 rbsa::default_daytype_heading("Daytype");
+char32 rbsa::default_hour_heading("Hour");
+char1024 rbsa::temperature_variable_name("temperature");
+char1024 rbsa::solargain_variable_name("solar_direct");
+char1024 rbsa::price_variable_name("energy_price");
+char1024 rbsa::occupancy_variable_name("occupancy_fraction");
 double rbsa::default_temperature_cooling_balance = 70.0;
 double rbsa::default_temperature_cooling_base = 70.0;
 double rbsa::default_temperature_cooling_design = 100.0;
@@ -662,7 +662,7 @@ int rbsa::filename(char *filename, size_t len)
 	char line[1024];
 	size_t count = 0;
 	struct {
-		char *label;
+		const char *label;
 		DAYTYPE code;
 	} codes[] = {
 		{default_weekday_code,  DT_WEEKDAY},

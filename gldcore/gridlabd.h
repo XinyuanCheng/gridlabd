@@ -205,7 +205,7 @@ typedef enum e_status {FAILED=FALSE, SUCCESS=TRUE} STATUS;
 
 #ifdef DLMAIN
 #define EXTERN
-#define INIT(X) = X
+#define INIT(X) (X)
 #else
 #define EXTERN extern
 #define INIT(X)
@@ -2662,10 +2662,10 @@ public:
 	inline char get_##X(size_t n) { gld_rlock _lock(my()); return X[n]; }; \
 	inline char get_##X(size_t n, gld_rlock&) { return X[n]; }; \
 	inline char get_##X(size_t n, gld_wlock&) { return X[n]; }; \
-	inline void set_##X(char *p) { gld_wlock _lock(my()); strncpy(X,p,sizeof(X)); }; \
-	inline void set_##X(char *p, gld_wlock&) { strncpy(X,p,sizeof(X)); }; \
-	inline void set_##X(size_t n, char c) { gld_wlock _lock(my()); X[n]=c; }; \
-	inline void set_##X(size_t n, char c, gld_wlock&) { X[n]=c; };  \
+	inline void set_##X(char *p) { gld_wlock _lock(my()); X = p; }; \
+	inline void set_##X(char *p, gld_wlock&) { X = p; }; \
+	inline void set_##X(size_t n, char c) { gld_wlock _lock(my()); X.set_at(n,c); }; \
+	inline void set_##X(size_t n, char c, gld_wlock&) { X.set_at(n,c); };  \
 
 // Define: GL_ARRAY
 // Define an array property
@@ -3092,7 +3092,7 @@ public:
 			return;
 		} 
 		char1024 vn; 
-		sprintf(vn,"%s::%s",m,n); 
+		vn.format("%s::%s",m,n); 
 		GLOBALVAR *v=callback->global.find(vn); 
 		pstruct.prop= (v?v->prop:NULL);  
 	};

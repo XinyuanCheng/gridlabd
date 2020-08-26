@@ -45,18 +45,18 @@ EXPORT int create_collector(OBJECT **obj, OBJECT *parent)
 		struct collector *my = OBJECTDATA(*obj,struct collector);
 		last_collector = *obj;
 		gl_set_parent(*obj,parent);
-		strcpy(my->file,"");
-		strcpy(my->filetype,"txt");
-		strcpy(my->delim,",");
-		strcpy(my->group,"");
+		my->file = "";
+		my->filetype = "txt";
+		my->delim = ",";
+		my->group = "";
 		my->interval = TS_NEVER; /* transients only */
 		my->dInterval = -1.0;
 		my->last.ts = -1;
-		strcpy(my->last.value,"");
+		my->last.value = "";
 		my->limit = 0;
 		my->samples = 0;
 		my->status = TS_INIT;
-		my->trigger[0]='\0';
+		my->trigger = "";
 		my->format = 0;
 		my->aggr = NULL;
 		my->property = NULL;
@@ -68,9 +68,9 @@ EXPORT int create_collector(OBJECT **obj, OBJECT *parent)
 
 static int collector_open(OBJECT *obj)
 {
-	char32 type="file";
-	char1024 fname="";
-	char32 flags="w";
+	char32 type("file");
+	char1024 fname("");
+	char32 flags("w");
 	TAPEFUNCS *tf = 0;
 	struct collector *my = OBJECTDATA(obj,struct collector);
 	
@@ -83,11 +83,11 @@ static int collector_open(OBJECT *obj)
 	my->interval = (int64)(my->dInterval/TS_SECOND);
 
 	/* if prefix is omitted (no colons found) */
-	if (sscanf(my->file,"%32[^:]:%1024[^:]:%[^:]",(char*)type,(char*)fname,(char*)flags)==1)
+	if (sscanf(my->file,"%32[^:]:%1024[^:]:%[^:]",type.resize(33),fname.resize(1025),flags.resize(33))==1)
 	{
 		/* filename is file by default */
-		strcpy(fname,my->file);
-		strcpy(type,"file");
+		fname = my->file;
+		type = "file";
 	}
 
 	/* if no filename given */
@@ -95,10 +95,10 @@ static int collector_open(OBJECT *obj)
 	{
 		char *p;
 		/* use group spec as default file name */
-		sprintf(fname,"%s.%s",(char*)(my->group),(char*)(my->filetype));
+		snprintf(fname.resize(PATH_MAX+33),PATH_MAX+33,"%s.%s",(const char*)(my->group),(const char*)(my->filetype));
 
 		/* but change disallowed characters to _ */
-		for (p=fname; *p!='\0'; p++)
+		for ( p = fname.get_string() ; *p != '\0' ; p++ )
 		{
 			if (!isalnum(*p) && *p!='-' && *p!='.')
 				*p='_';
@@ -116,7 +116,7 @@ static int collector_open(OBJECT *obj)
 	return my->ops->open(my, fname, flags);
 }
 
-static int write_collector(struct collector *my, char *ts, char *value)
+static int write_collector(struct collector *my, const char *ts, const char *value)
 {
 	int rc=my->ops->write(my, ts, value);
 	if ( (my->flush==0 || (my->flush>0 && gl_globalclock%my->flush==0)) && my->ops->flush!=NULL ) 
@@ -218,7 +218,7 @@ EXPORT int method_collector_property(OBJECT *obj, ...)
 	va_end(args);
 }
 
-AGGREGATION *link_aggregates(char *aggregate_list, char *group)
+AGGREGATION *link_aggregates(const char *aggregate_list, const char *group)
 {
 	char *item;
 	AGGREGATION *first=NULL, *last=NULL;
@@ -250,7 +250,7 @@ int read_aggregates(AGGREGATION *aggr, char *buffer, int size)
 	char tmp[1024];
 	char32 fmt;
 
-	gl_global_getvar("double_format", fmt, 32);
+	gl_global_getvar("double_format", fmt.get_string(), 32);
 	for ( p = aggr; p != NULL ; p = p->next )
 	{
 		int sz = snprintf(tmp,sizeof(tmp)-1,fmt,gl_run_aggregate(p));
@@ -276,7 +276,7 @@ EXPORT TIMESTAMP sync_collector(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 	struct collector *my = OBJECTDATA(obj,struct collector);
 	typedef enum {NONE='\0', LT='<', EQ='=', GT='>'} COMPAREOP;
 	COMPAREOP comparison;
-	char1024 buffer = "";
+	static char1024 buffer("");
 	
 	if(my->status == TS_DONE){
 		return TS_NEVER;
@@ -289,7 +289,7 @@ EXPORT TIMESTAMP sync_collector(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 	/* read property */
 	if (my->aggr==NULL)
 	{
-		sprintf(buffer,"'%s' contains an aggregate that is not found in the group '%s'", my->property, (char*)my->group);
+		buffer.format("'%s' contains an aggregate that is not found in the group '%s'", my->property, (const char*)my->group);
 		my->status = TS_ERROR;
 		goto Error;
 	}
@@ -299,15 +299,15 @@ EXPORT TIMESTAMP sync_collector(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 		if((my->interval > 0) && (my->last.ts < t0) && (my->last.value[0] != 0)){
 			collector_write(obj);
 			//my->last.ts = t0;
-			my->last.value[0] = 0;
+			my->last.value = "";
 		}
 	}
 
 	//if(my->aggr != NULL && (my->aggr = link_aggregates(my->property,my->group)),read_aggregates(my->aggr,buffer,sizeof(buffer))==0)
 	if(my->aggr != NULL && (my->interval == 0 || my->interval == -1)){
-		if(read_aggregates(my->aggr,buffer,sizeof(buffer))==0)
+		if ( read_aggregates(my->aggr,buffer.resize(1025),1025) == 0 )
 		{
-			sprintf(buffer,"unable to read aggregate '%s' of group '%s'", my->property, (char*)my->group);
+			buffer.format("unable to read aggregate '%s' of group '%s'", my->property, (const char*)my->group);
 			close_collector(my);
 			my->status = TS_ERROR;
 		}
@@ -315,8 +315,9 @@ EXPORT TIMESTAMP sync_collector(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 
 	if(my->aggr != NULL && my->interval > 0){
 		if((t0 >= my->last.ts + my->interval) || (t0 == my->last.ts)){
-			if(read_aggregates(my->aggr,buffer,sizeof(buffer))==0){
-				sprintf(buffer,"unable to read aggregate '%s' of group '%s'", my->property, (char*)my->group);
+			if ( read_aggregates(my->aggr,buffer.resize(1025),1025) == 0 )
+			{
+				buffer.format("unable to read aggregate '%s' of group '%s'", my->property, (const char*)my->group);
 				close_collector(my);
 				my->status = TS_ERROR;
 			}
@@ -347,21 +348,25 @@ EXPORT TIMESTAMP sync_collector(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass)
 	}
 
 	/* write tape */
-	if(my->status == TS_OPEN){	
-		if(my->interval == 0 /* sample on every pass */
+	if ( my->status == TS_OPEN ) 
+	{	
+		if ( my->interval == 0 /* sample on every pass */
 			|| ((my->interval == -1) && my->last.ts != t0 && strcmp(buffer, my->last.value) != 0) /* sample only when value changes */
-			){
-			strncpy(my->last.value, buffer, sizeof(my->last.value));
+			)
+		{
+			my->last.value = buffer;
 			my->last.ts = t0;
 			collector_write(obj);
-		} else if(my->interval > 0 && my->last.ts == t0){
-			strncpy(my->last.value, buffer, sizeof(my->last.value));
+		} 
+		else if ( my->interval > 0 && my->last.ts == t0 )
+		{
+			my->last.value = buffer;
 		}
 	}
 Error:
 	if (my->status==TS_ERROR)
 	{
-		gl_error("collector %d %s\n",obj->id, (char*)buffer);
+		gl_error("collector %d %s\n",obj->id, (const char*)buffer);
 		my->status=TS_DONE;
 		return 0; /* failed */
 	}

@@ -262,10 +262,10 @@ int restoration::init(OBJECT *parent)
 		//Parse the defined input values
 
 		//Read in the feeder power limit values
-		feeder_power_limit = ParseDoubleString(&feeder_power_limit_Pub[0],&numfVer);
+		feeder_power_limit = ParseDoubleString(feeder_power_limit_Pub.get_string(),&numfVer);
 
 		//Read in the feeder vertex object list
-		fVerObjList = ParseObjectString(&fVerPub[0],&working_int_val);
+		fVerObjList = ParseObjectString(fVerPub.get_string(),&working_int_val);
 
 		//Make sure the counts match, or throw an error
 		if (numfVer != working_int_val)
@@ -277,7 +277,7 @@ int restoration::init(OBJECT *parent)
 		}
 
 		//Read in the feeder "power flow" object list
-		fLinkObjList = ParseObjectString(&feeder_power_link_Pub[0],&working_int_val);
+		fLinkObjList = ParseObjectString(feeder_power_link_Pub.get_string(),&working_int_val);
 
 		//Do another check to make sure counts match
 		if (numfVer != working_int_val)
@@ -348,10 +348,10 @@ int restoration::init(OBJECT *parent)
 		}
 
 		//Read in the microgrid power limits (complex)
-		microgrid_limit = ParseComplexString(&microgrid_limit_Pub[0],&numMG);
+		microgrid_limit = ParseComplexString(microgrid_limit_Pub.get_string(),&numMG);
 
 		//Read in the microgrid vertex list
-		mVerObjList = ParseObjectString(&mVerPub[0],&working_int_val);
+		mVerObjList = ParseObjectString(mVerPub.get_string(),&working_int_val);
 
 		//Check to make sure these are proper too
 		if (numMG != working_int_val)
@@ -364,7 +364,7 @@ int restoration::init(OBJECT *parent)
 		}
 
 		//Read in the microgrid "power flow" object list
-		mLinkObjList = ParseObjectString(&microgrid_power_link_Pub[0],&working_int_val);
+		mLinkObjList = ParseObjectString(microgrid_power_link_Pub.get_string(),&working_int_val);
 
 		//Do another check to make sure counts match
 		if (numMG != working_int_val)
@@ -848,7 +848,7 @@ int restoration::PerformRestoration(int faulting_link)
 //Utility functions - string parsing
 //Parse comma-separated list of doubles into array
 //Assumes 1024-character input array
-double *restoration::ParseDoubleString(char *input_string,int *num_items_found)
+double *restoration::ParseDoubleString(char *input_string, int *num_items_found)
 {
 	int index, num_items, item_count;
 	char *working_token, *parsing_token;

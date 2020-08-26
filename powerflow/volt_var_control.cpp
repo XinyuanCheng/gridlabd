@@ -342,7 +342,7 @@ int volt_var_control::init(OBJECT *parent)
 
 	if (num_regs==1)	//Only 1 column, make sure something is actually in there
 	{
-		temp_obj = gl_get_object((char *)regulator_list);
+		temp_obj = gl_get_object(regulator_list);
 
 		if (temp_obj == NULL)	//Not really an object, must be no controllable capacitors
 			num_regs = 0;
@@ -490,7 +490,7 @@ int volt_var_control::init(OBJECT *parent)
 
 		//Now populate each of these massive arrays
 			//start with the regulators, their configurations, and related items
-			token_a = regulator_list;
+			token_a = regulator_list.get_string();
 			for (index=0; (int)index<num_regs; index++)
 			{
 				//Extract the object information
@@ -565,9 +565,9 @@ int volt_var_control::init(OBJECT *parent)
 				if (num_des_volt > 1)	//One for each regulator
 				{
 					//Point to list
-					token_a = minimum_voltage_txt;
-					token_b = maximum_voltage_txt;
-					token_c = desired_voltage_txt;
+					token_a = minimum_voltage_txt.get_string();
+					token_b = maximum_voltage_txt.get_string();
+					token_c = desired_voltage_txt.get_string();
 
 					//Initialize output pointers - just so compiler shuts up
 					token_a1 = token_a;
@@ -577,9 +577,9 @@ int volt_var_control::init(OBJECT *parent)
 				else if (num_des_volt == 1)	//1 value for all
 				{
 					//Point to list
-					token_a = minimum_voltage_txt;
-					token_b = maximum_voltage_txt;
-					token_c = desired_voltage_txt;
+					token_a = minimum_voltage_txt.get_string();
+					token_b = maximum_voltage_txt.get_string();
+					token_c = desired_voltage_txt.get_string();
 
 					//Initialize output pointers - just so compiler shuts up
 					token_a1 = token_a;
@@ -673,9 +673,9 @@ int volt_var_control::init(OBJECT *parent)
 				if (num_max_vdrop > 1)	//One for each regulator - loop precursor (point the tokens)
 				{
 					//Point to list
-					token_a = max_vdrop_txt;
-					token_b = vbw_low_txt;
-					token_c = vbw_high_txt;
+					token_a = max_vdrop_txt.get_string();
+					token_b = vbw_low_txt.get_string();
+					token_c = vbw_high_txt.get_string();
 
 					//Initialize output pointers - just so compiler shuts up
 					token_a1 = token_a;
@@ -685,9 +685,9 @@ int volt_var_control::init(OBJECT *parent)
 				else if (num_max_vdrop == 1)	//One for all regulators
 				{
 					//Point to list
-					token_a = max_vdrop_txt;
-					token_b = vbw_low_txt;
-					token_c = vbw_high_txt;
+					token_a = max_vdrop_txt.get_string();
+					token_b = vbw_low_txt.get_string();
+					token_c = vbw_high_txt.get_string();
 
 					//Initialize output pointers - just so compiler shuts up
 					token_a1 = token_a;
@@ -835,7 +835,7 @@ int volt_var_control::init(OBJECT *parent)
 
 	if (num_caps==1)	//Only 1 column, make sure something is actually in there
 	{
-		temp_obj = gl_get_object((char *)capacitor_list);
+		temp_obj = gl_get_object(capacitor_list);
 
 		if (temp_obj == NULL)	//Not really an object, must be no controllable capacitors
 			num_caps = 0;
@@ -877,7 +877,7 @@ int volt_var_control::init(OBJECT *parent)
 			}
 
 			//Parse the list now - the list is the capacitor
-			token_a = capacitor_list;
+			token_a = capacitor_list.get_string();
 
 			temp_obj = gl_get_object(token_a);
 				
@@ -991,7 +991,7 @@ int volt_var_control::init(OBJECT *parent)
 			}
 
 			//Parse the list now
-			token_a = capacitor_list;
+			token_a = capacitor_list.get_string();
 			for (index = 0; (int)index < num_caps; index++)
 			{
 				//Extract the object information
@@ -1173,7 +1173,7 @@ int volt_var_control::init(OBJECT *parent)
 			tempchar[index] = 0;
 
 		//Find the first comma
-		token_b = measurement_list;
+		token_b = measurement_list.get_string();
 		token_b1 = strchr(token_b,',');
 
 		//Find the second comma
@@ -1217,7 +1217,7 @@ int volt_var_control::init(OBJECT *parent)
 	else if ((num_regs == 1) && (total_meas == 1))
 	{
 		//1 reg and 1 measurement, make sure it is a valid object before proceeding
-		token_a = measurement_list;	//Get first item (valid)
+		token_a = measurement_list.get_string();	//Get first item (valid)
 
 		//Extract the object information
 		token_a1 = obj_token(token_a, &temp_obj);
@@ -1256,7 +1256,7 @@ int volt_var_control::init(OBJECT *parent)
 		if (total_meas != 0)	//There's at least something in there
 		{
 			//List is assumed valid, now figure out how big everything needs to be
-			token_b1 = measurement_list;	//Start the list
+			token_b1 = measurement_list.get_string();	//Start the list
 
 			for (index=0; (int)index<total_meas; index++)
 			{
@@ -1363,7 +1363,7 @@ int volt_var_control::init(OBJECT *parent)
 		}
 
 		//Now populate the list
-		token_a = measurement_list;	//Start the list
+		token_a = measurement_list.get_string();	//Start the list
 		for (index=0; (int)index<total_meas; index++)
 		{
 			//First item is the object, grab it
@@ -1438,7 +1438,7 @@ int volt_var_control::init(OBJECT *parent)
 			indexa=0;
 
 			//Now populate the list
-			token_a = measurement_list;	//Start the list
+			token_a = measurement_list.get_string();	//Start the list
 			for (index=0; (int)index<total_meas; index++)
 			{
 				//First item is the object, grab it

@@ -86,9 +86,9 @@ int voltdump::init(OBJECT *parent)
 		{
 			maxcount = 0; 
 		}
-		if ( strcmp(filemode,"") == 0 )
+		if ( filemode == "" )
 		{
-			strcpy(filemode,"a");
+			filemode = "a";
 		}
 		runtime = TS_NEVER;
 	}
@@ -98,9 +98,9 @@ int voltdump::init(OBJECT *parent)
 		{
 			maxcount = 1;
 		}
-		if ( strcmp(filemode,"") == 0 )
+		if ( filemode == "" )
 		{
-			strcpy(filemode,"w");
+			filemode = "w";
 		}
 	}
 	if ( version < 0 || version > 2 )

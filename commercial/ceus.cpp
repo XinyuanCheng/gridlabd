@@ -21,17 +21,17 @@ double ceus::default_nominal_voltage = 240.0;
 complex ceus::default_nominal_voltage_A(240.0,0.0,A);
 complex ceus::default_nominal_voltage_B(240.0,-120.0,A);
 complex ceus::default_nominal_voltage_C(240.0,+120.0,A);
-char32 ceus::default_weekday_code ="WEEKDAY";
-char32 ceus::default_saturday_code ="SATURDAY";
-char32 ceus::default_sunday_code ="SUNDAY";
-char32 ceus::default_holiday_code ="HOLIDAY";
-char32 ceus::default_month_heading = "Month";
-char32 ceus::default_daytype_heading = "Daytype";
-char32 ceus::default_hour_heading = "Hour";
-char1024 ceus::temperature_variable_name = "temperature";
-char1024 ceus::solargain_variable_name = "solar_direct";
-char1024 ceus::price_variable_name = "energy_price";
-char1024 ceus::occupancy_variable_name = "occupancy_fraction";
+char32 ceus::default_weekday_code("WEEKDAY");
+char32 ceus::default_saturday_code("SATURDAY");
+char32 ceus::default_sunday_code("SUNDAY");
+char32 ceus::default_holiday_code("HOLIDAY");
+char32 ceus::default_month_heading("Month");
+char32 ceus::default_daytype_heading("Daytype");
+char32 ceus::default_hour_heading("Hour");
+char1024 ceus::temperature_variable_name("temperature");
+char1024 ceus::solargain_variable_name("solar_direct");
+char1024 ceus::price_variable_name("energy_price");
+char1024 ceus::occupancy_variable_name("occupancy_fraction");
 double ceus::default_temperature_cooling_balance = 70.0;
 double ceus::default_temperature_cooling_base = 70.0;
 double ceus::default_temperature_cooling_design = 100.0;
@@ -754,7 +754,7 @@ int ceus::filename(char *filename, size_t len)
 	size_t count = 0;
 	struct 
 	{
-		char *label;
+		const char *label;
 		DAYTYPE code;
 	} codes[] = 
 	{

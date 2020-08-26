@@ -13,7 +13,7 @@
 #define CONFIGPATH "/usr/local/var/gridlabd/"
 
 static SOLVERPYTHONSTATUS solver_py_status = SPS_INIT;
-char1024 solver_py_config = CONFIGPATH CONFIGNAME;
+char1024 solver_py_config(CONFIGPATH CONFIGNAME);
 static const char *model_busdump = NULL;
 static const char *model_branchdump = NULL;
 static const char *model_dump_handler = NULL;

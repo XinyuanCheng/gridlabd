@@ -107,7 +107,7 @@ pqload::pqload(MODULE *mod) : load(mod)
 	memset(this,0,sizeof(pqload));
 	input[5] = 1.0; /* constant term */
 	//imped_p[5] = 0;
-	strcpy(schedule, "* * * * *:1.0;");
+	schedule = "* * * * *:1.0;";
 	temp_nom = zero_F;
 	load_class = LC_UNKNOWN;
 	sched_until = TS_NEVER;

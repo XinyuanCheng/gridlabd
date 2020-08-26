@@ -701,194 +701,29 @@ int convert_to_int64(const char *buffer, /**< a pointer to the string buffer */
 	return sscanf(buffer,"%lld",(long long *)data);
 }
 
-/** Convert from a \e char8
-	Converts a \e char8 property to a string.  
+/** Convert from a \e varchar
+	Converts a \e varchar property to a string.  
 	@return the number of character written to the string
  **/
-int convert_from_char8(char *buffer, /**< pointer to the string buffer */
+int convert_from_varchar(char *buffer, /**< pointer to the string buffer */
 						int size, /**< size of the string buffer */
 					    void *data, /**< a pointer to the data */
 					    PROPERTY *prop) /**< a pointer to keywords that are supported */
 {
-	char temp[1025];
-	const char *format = "%s";
-	int count = 0;
-	if ( strchr((char*)data,' ') != NULL || strchr((char*)data,';') != NULL || ((char*)data)[0] == '\0' )
-	{
-		// TODO: get rid of this when GLM is made strictly quoted properties
-		format = "\"%s\"";
-	}
-	count = sprintf(temp,format,(char*)data);
-	if ( count > size - 1 )
-	{
-		return 0;
-	} 
-	else 
-	{
-		memcpy(buffer, temp, count);
-		buffer[count] = 0;
-		return count;
-	}
+	((varchar*)data)->copy_to(buffer,size);
+	return strlen(buffer);
 }
 
-/** Convert to a \e char8
-	Converts a string to a \e char8 property.  
+/** Convert to a \e varchar
+	Converts a string to a \e varchar property.  
 	@return 1 on success, 0 on failure, -1 if conversion was incomplete
  **/
-int convert_to_char8(const char *buffer, /**< a pointer to the string buffer */
+int convert_to_varchar(const char *buffer, /**< a pointer to the string buffer */
 					    void *data, /**< a pointer to the data */
 					    PROPERTY *prop) /**< a pointer to keywords that are supported */
 {
-	char c=((char*)buffer)[0];
-	switch (c) {
-	case '\0':
-		return ((char*)data)[0]='\0', 1;
-	case '"':
-		return sscanf(buffer+1,"%8[^\"]",(char*)data) ? strlen((char*)data)+1 : 0;
-	default:
-		return sscanf(buffer,"%8[^\n]",(char*)data) ? strlen((char*)data)+1 : 0;
-	}
-}
-
-/** Convert from a \e char32
-	Converts a \e char32 property to a string.  
-	@return the number of character written to the string
- **/
-int convert_from_char32(char *buffer, /**< pointer to the string buffer */
-						int size, /**< size of the string buffer */
-					    void *data, /**< a pointer to the data */
-					    PROPERTY *prop) /**< a pointer to keywords that are supported */
-{
-	char temp[1025];
-	const char *format = "%s";
-	int count = 0;
-	if ( strchr((char*)data,' ') != NULL || strchr((char*)data,';') != NULL || ((char*)data)[0] == '\0' )
-	{ 
-		// TODO: get rid of this when GLM is made strictly quoted properties
-		format = "\"%s\""; 
-	}
-	count = sprintf(temp,format,(char*)data);
-	if ( count > size - 1 )
-	{
-		return 0;
-	} 
-	else 
-	{
-		memcpy(buffer, temp, count);
-		buffer[count] = 0;
-		return count;
-	}
-}
-
-/** Convert to a \e char32
-	Converts a string to a \e char32 property.  
-	@return 1 on success, 0 on failure, -1 if conversion was incomplete
- **/
-int convert_to_char32(const char *buffer, /**< a pointer to the string buffer */
-					    void *data, /**< a pointer to the data */
-					    PROPERTY *prop) /**< a pointer to keywords that are supported */
-{
-	char c=((char*)buffer)[0];
-	switch (c) {
-	case '\0':
-		return ((char*)data)[0]='\0', 1;
-	case '"':
-		return sscanf(buffer+1,"%32[^\"]",(char*)data) ? strlen((char*)data)+1 : 0;
-	default:
-		return sscanf(buffer,"%32[^\n]",(char*)data) ? strlen((char*)data)+1 : 0;
-	}
-}
-
-/** Convert from a \e char256
-	Converts a \e char256 property to a string.  
-	@return the number of character written to the string
- **/
-int convert_from_char256(char *buffer, /**< pointer to the string buffer */
-						int size, /**< size of the string buffer */
-					    void *data, /**< a pointer to the data */
-					    PROPERTY *prop) /**< a pointer to keywords that are supported */
-{
-	char temp[1025];
-	const char *format = "%s";
-	int count = 0;
-	if  ( strchr((char*)data,' ') != NULL || strchr((char*)data,';') != NULL || ((char*)data)[0] == '\0')
-	{
-		// TODO: get rid of this when GLM is made strictly quoted properties
-		format = "\"%s\"";
-	}
-	count = sprintf(temp,format,(char*)data);
-	if ( count > size - 1 )
-	{
-		return 0;
-	} 
-	else 
-	{
-		memcpy(buffer, temp, count);
-		buffer[count] = 0;
-		return count;
-	}
-}
-
-/** Convert to a \e char256
-	Converts a string to a \e char256 property.  
-	@return 1 on success, 0 on failure, -1 if conversion was incomplete
- **/
-int convert_to_char256(const char *buffer, /**< a pointer to the string buffer */
-					    void *data, /**< a pointer to the data */
-					    PROPERTY *prop) /**< a pointer to keywords that are supported */
-{
-	char c=((char*)buffer)[0];
-	switch (c) {
-	case '\0':
-		return ((char*)data)[0]='\0', 1;
-	case '"':
-		return sscanf(buffer+1,"%256[^\"]",(char*)data) ? strlen((char*)data)+1 : 0;
-	default:
-		return sscanf(buffer,"%256[^\n]",(char*)data) ? strlen((char*)data)+1 : 0;
-	}
-}
-
-/** Convert from a \e char1024
-	Converts a \e char1024 property to a string.  
-	@return the number of character written to the string
- **/
-int convert_from_char1024(char *buffer, /**< pointer to the string buffer */
-						int size, /**< size of the string buffer */
-					    void *data, /**< a pointer to the data */
-					    PROPERTY *prop) /**< a pointer to keywords that are supported */
-{
-	char temp[4097];
-	const char *format = "%s";
-	int count = 0;
-	if (strchr((char*)data,' ')!=NULL || strchr((char*)data,';')!=NULL || ((char*)data)[0]=='\0')
-		format = "\"%s\"";
-	count = sprintf(temp,format,(char*)data);
-	if(count > size - 1){
-		return 0;
-	} else {
-		memcpy(buffer, temp, count);
-		buffer[count] = 0;
-		return count;
-	}
-}
-
-/** Convert to a \e char1024
-	Converts a string to a \e char1024 property.  
-	@return 1 on success, 0 on failure, -1 if conversion was incomplete
- **/
-int convert_to_char1024(const char *buffer, /**< a pointer to the string buffer */
-					    void *data, /**< a pointer to the data */
-					    PROPERTY *prop) /**< a pointer to keywords that are supported */
-{
-	char c=((char*)buffer)[0];
-	switch (c) {
-	case '\0':
-		return ((char*)data)[0]='\0', 1;
-	case '"':
-		return sscanf(buffer+1,"%1024[^\"]",(char*)data) ? strlen((char*)data)+1 : 0;
-	default:
-		return sscanf(buffer,"%1024[^\n]",(char*)data) ? strlen((char*)data)+1 : 0;
-	}
+	((varchar*)data)->copy_from(buffer);
+	return strlen(buffer);
 }
 
 /** Convert from an \e object

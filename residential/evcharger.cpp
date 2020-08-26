@@ -96,7 +96,7 @@ EVPROFILEITEM *first_demand_profile = NULL;
 
 /// Find an EV demand profile
 /// @returns pointer to the matching EVPROFILEITEM structure
-EVDEMAND *find_demand_profile(char *name) ///< name of profile
+EVDEMAND *find_demand_profile(const char *name) ///< name of profile
 {
 	EVPROFILEITEM *item = first_demand_profile;
 	while (item!=NULL)
@@ -119,7 +119,7 @@ EVPROFILEITEM *add_demand_profile(EVDEMAND *data)
 	item->next = first_demand_profile;
 	return first_demand_profile = item;
 }
-EVDEMAND *load_demand_profile(char *filename)
+EVDEMAND *load_demand_profile(const char *filename)
 {
 	char filepath[1024];
 	if (gl_findfile(filename,NULL,R_OK,filepath,sizeof(filepath))==NULL)	
@@ -238,7 +238,7 @@ EVDEMAND *load_demand_profile(char *filename)
 	fclose(fp);
 	return data;
 }
-EVDEMAND *get_demand_profile(char *name)
+EVDEMAND *get_demand_profile(const char *name)
 {
 	EVDEMAND *profile = find_demand_profile(name);
 	if (profile==NULL)
@@ -378,7 +378,9 @@ int evcharger::init(OBJECT *parent)
 
 	// load demand profile
 	if (strcmp(demand_profile,"")!=0)
+	{
 		pDemand = get_demand_profile(demand_profile);
+	}
 	
 	retval = residential_enduse::init(parent);
 

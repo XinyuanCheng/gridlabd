@@ -85,10 +85,11 @@ double_controller::double_controller(MODULE *module)
 	}
 }
 
-int double_controller::create( ) {
+int double_controller::create( void ) 
+{
 	memset(this, 0, sizeof(double_controller));
-	sprintf(avg_target, "avg24");
-	sprintf(std_target, "std24");
+	avg_target = "avg24";
+	std_target = "std24";
 	controller_bid.rebid = false;
 	controller_bid.bid_accepted = true;
 	return 1;
@@ -99,15 +100,15 @@ void double_controller::cheat( ) {
 		case ST_NONE:
 			break;
 		case ST_HOUSE:
-			strcpy(temperature_name, "air_temperature");
-			strcpy(deadband_name, "thermostat_deadband");
-			strcpy(cool_setpoint_name, "cooling_setpoint");
-			strcpy(cool_demand_name, "cooling_demand");
-			strcpy(heat_setpoint_name, "heating_setpoint");
-			strcpy(heat_demand_name, "heating_demand");
-			strcpy(load_name, "hvac_load");
-			strcpy(total_load_name, "total_load");
-			strcpy(state_name,"power_state");
+			temperature_name = "air_temperature";
+			deadband_name = "thermostat_deadband";
+			cool_setpoint_name = "cooling_setpoint";
+			cool_demand_name = "cooling_demand";
+			heat_setpoint_name = "heating_setpoint";
+			heat_demand_name = "heating_demand";
+			load_name = "hvac_load";
+			total_load_name = "total_load";
+			state_name = "power_state";
 			break;
 		default:
 			break;

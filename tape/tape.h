@@ -24,16 +24,18 @@ typedef enum {UNKNOWN=0, PLAYER=1, RECORDER=2, GROUPRECORDER=3} DELTATAPEOBJ;
 typedef enum {HU_DEFAULT, HU_ALL, HU_NONE} HEADERUNITS;
 typedef enum {LU_DEFAULT, LU_ALL, LU_NONE} LINEUNITS;
 
-typedef struct s_tape_operations {
-	int (*open)(void *my, char *fname, char *flags);
+typedef struct s_tape_operations 
+{
+	int (*open)(void *my, const char *fname, const char *flags);
 	char *(*read)(void *my,char *buffer,unsigned int size);
-	int (*write)(void *my, char *timestamp, char *value);
+	int (*write)(void *my, const char *timestamp, const char *value);
 	int (*rewind)(void *my);
 	void (*close)(void *my);
 	void (*flush)(void *my);
 } TAPEOPS;
 
-typedef struct s_tape_funcs {
+typedef struct s_tape_funcs 
+{
 	char256 mode;
 	void *hLib;
 	TAPEOPS *player;
@@ -44,29 +46,33 @@ typedef struct s_tape_funcs {
 	struct s_tape_funcs *next;
 } TAPEFUNCS;
 
-CDECL TAPEFUNCS *get_ftable(char *mode);
+CDECL TAPEFUNCS *get_ftable(const char *mode);
 
-typedef struct {
+typedef struct 
+{
 	const char *name;
 	VARIABLETYPE type;
 	void *addr;
 	double min, max;
 } VARMAP;
 
-typedef struct s_recobjmap {
+typedef struct s_recobjmap 
+{
 	OBJECT *obj;
 	PROPERTY prop; // must be an instance
 	double scale;
 	struct s_recobjmap *next;
 } RECORDER_MAP;
 
-typedef struct s_deltaobj {
+typedef struct s_deltaobj 
+{
 	OBJECT *obj;
 	DELTATAPEOBJ obj_type;
 	struct s_deltaobj *next;
 } DELTAOBJ_LIST;
 
-typedef struct s_memory {
+typedef struct s_memory 
+{
 	GLOBALVAR *buffer;
 	unsigned short index;
 } MEMORY;
@@ -75,7 +81,8 @@ typedef struct s_memory {
   @addtogroup player
 	@{ 
  **/
-struct player {
+struct player 
+{
 	/* public */
 	char1024 file; /**< the name of the player source */
 	char8 filetype; /**< the type of the player source */
@@ -110,13 +117,15 @@ struct player {
 	@addtogroup shaper
 	@{
  **/
-typedef struct s_shapertarget {
+typedef struct s_shapertarget 
+{
 	double *addr; /**< the address of the target property */
 	TIMESTAMP ts; /**< the current timestamp to shape for */
 	double value; /**< the current value to shape */
 } SHAPERTARGET; /**< the shaper target structure */
 
-struct shaper {
+struct shaper 
+{
 	/* public */
 	char1024 file; /**< the name of the shaper source */
 	char8 filetype; /**< the type of the shaper source */
@@ -149,7 +158,8 @@ struct shaper {
 	@addtogroup recorder
 	@{
  **/
-struct recorder {
+struct recorder 
+{
 	/* public */
 	char1024 file;
 	char8 filetype;
@@ -178,7 +188,8 @@ struct recorder {
 	FILETYPE type;
 	HEADERUNITS header_units;
 	LINEUNITS line_units;
-	union {
+	union 
+	{
 		FILE *fp;
 		MEMORY *memory;
 		void *tsp;
@@ -186,7 +197,8 @@ struct recorder {
 	};
 	TAPESTATUS status;
 	char8 delim;
-	struct {
+	struct 
+	{
 		TIMESTAMP ts;
 		int64 ns;
 		char1024 value;
@@ -201,7 +213,8 @@ struct recorder {
 	@addtogroup collector
 	@{
  **/
-struct collector {
+struct collector 
+{
 	/* public */
 	char1024 file;
 	char8 filetype;
@@ -222,7 +235,8 @@ struct collector {
 	/* private */
 	TAPEOPS *ops;
 	FILETYPE type;
-	union {
+	union 
+	{
 		FILE *fp;
 		MEMORY *memory;
 		void *tsp;
@@ -230,7 +244,8 @@ struct collector {
 	};
 	TAPESTATUS status;
 	char8 delim;
-	struct {
+	struct 
+	{
 		TIMESTAMP ts;
 		char1024 value;
 	} last;
