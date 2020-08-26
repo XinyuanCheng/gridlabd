@@ -267,18 +267,20 @@ static int daemon_run(int sockfd)
 	int argc = parse_command(command, argv+1, MAXARGS-1)+1;
 
 	// dump
-	strcpy(global_command_line,"");
+	global_command_line = "";
 	for ( int n = 0 ; n < argc ; n++ )
 	{
 		if ( n > 0 )
-			strcat(global_command_line," ");
-		strcat(global_command_line,argv[n]);
+		{
+			global_command_line.copy_from(" ",-1);
+		}
+		global_command_line.copy_from(argv[n],-1);
 	}
 
 	if ( argc > 1 && cmdarg_load(argc,(const char**)argv) == SUCCESS )
 	{
 		// write result
-		daemon_log("running command [%s] on socket %d", global_command_line, sockfd);
+		daemon_log("running command [%s] on socket %d", (const char*)global_command_line, sockfd);
 		delete argv[0];
 		return XC_SUCCESS;
 	}
@@ -311,7 +313,9 @@ static void daemon_process(void)
 	daemon_log("***");
 	daemon_log("*** new daemon starting");
 	daemon_log("***");
-	daemon_log("gridlabd version %d.%d.%d-%d (%s)",global_version_major,global_version_minor,global_version_patch,global_version_build,global_version_branch);
+	daemon_log("gridlabd version %d.%d.%d-%d (%s)",
+		global_version_major, global_version_minor, global_version_patch,
+		global_version_build, (const char*)global_version_branch);
 	daemon_log("workdir is '%s'", workdir);
 	daemon_log("daemon pid is %d",getpid());
 	atexit(daemon_cleanup);

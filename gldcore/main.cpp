@@ -206,7 +206,7 @@ int GldMain::mainloop(int argc, const char *argv[])
 {
 	/* start the processing environment */
 	IN_MYCONTEXT output_verbose("load time: %d sec", realtime_runtime());
-	IN_MYCONTEXT output_verbose("starting up %s environment", global_environment);
+	IN_MYCONTEXT output_verbose("starting up %s environment", (const char*)global_environment);
 	if (environment_start(argc,argv)==FAILED)
 	{
 		output_fatal("environment startup failed: %s", strerror(errno));
@@ -227,21 +227,23 @@ void GldMain::set_global_browser(const char *path)
 
 	/* specify the default browser */
 	if ( browser != NULL )
-		strncpy(global_browser,browser,sizeof(global_browser)-1);
+	{
+		global_browser = browser;
+	}
 
 }
 
 void GldMain::set_global_execname(const char *path)
 {
-	strcpy(global_execname,path);
+	global_execname = path;
 }
 
 void GldMain::set_global_execdir(const char *path)
 {
 	char *pd1, *pd2;
-	strcpy(global_execdir,path);
-	pd1 = strrchr(global_execdir,'/');
-	pd2 = strrchr(global_execdir,'\\');
+	global_execdir = path;
+	pd1 = strrchr(global_execdir.get_string(),'/');
+	pd2 = strrchr(global_execdir.get_string(),'\\');
 	if (pd1>pd2) *pd1='\0';
 	else if (pd2>pd1) *pd2='\0';
 	return;
@@ -249,11 +251,13 @@ void GldMain::set_global_execdir(const char *path)
 
 void GldMain::set_global_command_line(int argc, const char *argv[])
 {
-	int i, pos=0;
-	for (i=0; i<argc; i++)
+	for ( int i = 0 ; i < argc; i++ )
 	{
-		if (pos < (int)(sizeof(global_command_line)-strlen(argv[i])))
-			pos += sprintf(global_command_line+pos,"%s%s",pos>0?" ":"",argv[i]);
+		if ( i > 0 )
+		{
+			global_command_line.copy_from(" ",-1);
+		}
+		global_command_line.copy_from(argv[i],-1);
 	}
 	return;
 }
@@ -261,9 +265,13 @@ void GldMain::set_global_command_line(int argc, const char *argv[])
 void GldMain::set_global_workdir(const char *path)
 {
 	if ( path )
-		strncpy(global_workdir,path,sizeof(global_workdir)-1);
-	else if ( getcwd(global_workdir,sizeof(global_workdir)-1) == NULL )
+	{
+		global_workdir = path;
+	}
+	else if ( getcwd(global_workdir.resize(PATH_MAX),PATH_MAX-1) == NULL )
+	{
 		output_error("unable to read current working directory");
+	}
 	return;
 }
 
@@ -274,7 +282,7 @@ void GldMain::create_pidfile()
 		FILE *fp = fopen(global_pidfile,"w");
 		if (fp==NULL)
 		{
-			output_fatal("unable to create pidfile '%s'", global_pidfile);
+			output_fatal("unable to create pidfile '%s'", (const char*)global_pidfile);
 			/*	TROUBLESHOOT
 				The system must allow creation of the process id file at
 				the location indicated in the message.  Create and/or
@@ -286,7 +294,7 @@ void GldMain::create_pidfile()
 #define getpid _getpid
 #endif
 		fprintf(fp,"%d\n",getpid());
-		IN_MYCONTEXT output_verbose("process id %d written to %s", getpid(), global_pidfile);
+		IN_MYCONTEXT output_verbose("process id %d written to %s", getpid(), (const char*)global_pidfile);
 		fclose(fp);
 		atexit(delete_pidfile);
 	}
@@ -332,7 +340,7 @@ int GldMain::run_on_exit(int return_code)
 	if (strcmp(global_savefile,"")!=0)
 	{
 		if (saveall(global_savefile)==FAILED)
-			output_error("save to '%s' failed", global_savefile);
+			output_error("save to '%s' failed", (const char*)global_savefile);
 	}
 
 	/* do module dumps */

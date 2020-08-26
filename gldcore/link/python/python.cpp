@@ -117,7 +117,7 @@ static PyObject *gridlabd_version(PyObject *self, PyObject *args)
         "minor", global_version_minor, 
         "patch", global_version_patch,
         "build", global_version_build,
-        "branch", global_version_branch);
+        "branch", (const char*)global_version_branch);
 }
 
 static PyObject *gridlabd_copyright(PyObject *self, PyObject *args)

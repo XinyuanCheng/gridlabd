@@ -362,26 +362,29 @@ DEPRECATED static void buildtmp(void)
 {
 	const char *tmp, *home, *user;
 
-	if ((tmp = getenv("GLTEMP"))) {
-		snprintf(global_tmp, sizeof(global_tmp), "%s", tmp);
+	if ( (tmp = getenv("GLTEMP")) != NULL ) 
+	{
+		global_tmp.format("%s",tmp);
 		return;
 	}
-	if ((home = getenv(HOMEVAR))) {
+	if ( (home = getenv(HOMEVAR)) != NULL ) 
+	{
 #ifdef WIN32
 		char *drive;
-		if (!(drive = getenv("HOMEDRIVE")))
+		if ( ! (drive=getenv("HOMEDRIVE")) )
+		{
 			drive = "";
-		snprintf(global_tmp, sizeof(global_tmp),
-				"%s%s\\Local Settings\\Temp\\gridlabd", drive, home);
+		}
+		global_tmp.format("%s%s\\Local Settings\\Temp\\gridlabd", drive, home);
 #else
-		snprintf(global_tmp, sizeof(global_tmp), "%s/.gridlabd/tmp", home);
+		global_tmp.format("%s/.gridlabd/tmp", home);
 #endif
 		return;
 	}
 	if (!(tmp = getenv("TMP")) && !(tmp = getenv("TEMP")))
 		tmp = TMP;
 	user = getenv(USERVAR);
-	snprintf(global_tmp, sizeof(global_tmp), "%s%s%s" PATHSEP PACKAGE,
+	global_tmp.format("%s%s%s" PATHSEP PACKAGE,
 			tmp, (user ? PATHSEP : ""), (user ? user : ""));
 }
 
@@ -398,11 +401,13 @@ STATUS GldGlobals::init(void)
 	global_version_minor = version_minor();
 	global_version_patch = version_patch();
 	global_version_build = version_build();
-	strncpy(global_version_branch,version_branch(),sizeof(global_version_branch));
+	global_version_branch = version_branch();
 	global_datadir = global_execdir;
 	size_t bin = global_datadir.find("/bin");
 	global_datadir.copy_from("/share/gridlabd",bin);
-	sprintf(global_version,"%d.%d.%d-%d-%s",global_version_major,global_version_minor,global_version_patch,global_version_build,global_version_branch);
+	global_version.format("%d.%d.%d-%d-%s",
+		global_version_major,global_version_minor,global_version_patch,
+		global_version_build,(const char*)global_version_branch);
 
 	for ( i = 0 ; i < sizeof(map) / sizeof(map[0]) ; i++ )
 	{

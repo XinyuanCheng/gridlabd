@@ -215,7 +215,8 @@ int setup(void *main, int argc, const char *argv[])
 
 		// header
 		mvprintw(0,0,"%s %d.%d.%d-%d (%s) Setup Editor",PACKAGE_NAME,
-			global_version_major, global_version_minor, global_version_patch, global_version_build,global_version_branch);
+			global_version_major, global_version_minor, global_version_patch, 
+			global_version_build,(const char*)global_version_branch);
 		mvprintw(1,0,"%s",hline);
 		
 		// tabs

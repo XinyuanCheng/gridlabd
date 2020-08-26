@@ -180,7 +180,7 @@ Retry:
 		serv_addr.sin_addr.s_addr = inet_addr(global_server_inaddr);
 		if ( !serv_addr.sin_addr.s_addr )
 		{
-			output_error("invalid server_inaddr argument supplied : %s", global_server_inaddr);
+			output_error("invalid server_inaddr argument supplied : %s", (const char*)global_server_inaddr);
 			return FAILED;
 		}
 	}

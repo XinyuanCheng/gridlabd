@@ -26,7 +26,7 @@ STATUS environment_start(int argc, /**< the number of arguments to pass to the e
 	{
 		if (gui_get_root()) 
 		{
-			strcpy(global_environment,"gui");
+			global_environment = "gui";
 			goto UseGui;
 		}
 
@@ -45,7 +45,7 @@ STATUS environment_start(int argc, /**< the number of arguments to pass to the e
 			if (global_dumpfile[0]!='\0')
 			{
 				if (!saveall(global_dumpfile))
-					output_error("dump to '%s' failed", global_dumpfile);
+					output_error("dump to '%s' failed", (const char*)global_dumpfile);
 					/* TROUBLESHOOT
 						An attempt to create a dump file failed.  This message should be
 						preceded by a more detailed message explaining why if failed.
@@ -53,7 +53,7 @@ STATUS environment_start(int argc, /**< the number of arguments to pass to the e
 					 */
 				else
 				{
-					IN_MYCONTEXT output_debug("dump to '%s' complete", global_dumpfile);
+					IN_MYCONTEXT output_debug("dump to '%s' complete", (const char*)global_dumpfile);
 				}
 			}
 			return FAILED;
@@ -112,7 +112,7 @@ UseGui:
 	}
 	else
 	{
-		output_fatal("%s environment not recognized or supported",global_environment);
+		output_fatal("%s environment not recognized or supported", (const char*)global_environment);
 		/*	TROUBLESHOOT
 			The environment specified isn't supported. Currently only
 			the <b>batch</b> environment is normally supported, although 

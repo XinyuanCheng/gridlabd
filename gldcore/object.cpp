@@ -1689,7 +1689,7 @@ int object_event(OBJECT *obj, char *event, long long *p_retval=NULL)
 		char buffer[1024];
 		sprintf(buffer,"%lld",global_clock);
 		setenv("CLOCK",buffer,1);
-		sprintf(buffer,"%s",global_hostname);
+		sprintf(buffer,"%s",(const char*)global_hostname);
 		setenv("HOSTNAME",buffer,1);
 		sprintf(buffer,"%d",global_server_portnum);
 		setenv("PORT",buffer,1);

@@ -1196,7 +1196,7 @@ Retry:
 		}
 		else if (strncmp(cmd,"gdb",3)==0)
 		{
-			if (exec("gdb --quiet %s --pid=%d",global_execname,global_process_id)<=0)
+			if (exec("gdb --quiet %s --pid=%d",(const char*)global_execname,global_process_id)<=0)
 				output_debug("unable to start gdb");
 		}
 		else if (strncmp(cmd,"help",max((size_t)1,strlen(cmd)))==0)

@@ -649,14 +649,14 @@ STATUS instance_slave_init_socket(){
 	memset(&connaddr, 0, sizeof(connaddr));
 	connaddr.sin_addr.s_addr = inet_addr(global_master);
 	if(INADDR_NONE == connaddr.sin_addr.s_addr){
-		output_fatal("instance_slave_init_socket(): unrecognized inet_addr \'%s\'", global_master);
+		output_fatal("instance_slave_init_socket(): unrecognized inet_addr \'%s\'", (const char*)global_master);
 		return FAILED;
 	}
 	connaddr.sin_port = htons((unsigned short)global_master_port);
 	connaddr.sin_family = AF_INET;
 	rv = connect(local_inst.sockfd, (struct sockaddr *)&connaddr, sizeof(connaddr));
 	if(0 != rv){
-		output_fatal("instance_slave_init_socket(): could not connect to %s:%d", global_master, global_master_port);
+		output_fatal("instance_slave_init_socket(): could not connect to %s:%d", (const char*)global_master, global_master_port);
 		#ifdef WIN32
 			output_error("WSA error: %d", WSAGetLastError());
 		#else

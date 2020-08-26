@@ -639,10 +639,8 @@ EXPORT int open_collector(struct collector *my, char *fname, char *flags)
 	}
 
 	write_default_plot_commands_col(my, extension);
-	if (my->columns){
-		sscanf(my->columns,"%s", columnlist);
-		fprintf(my->fp, "plot \'-\' using %s with lines;\n", columnlist);
-	}
+	my->columns = columnlist;
+	fprintf(my->fp, "plot \'-\' using %s with lines;\n", columnlist);
 
 	free(columns);
 	

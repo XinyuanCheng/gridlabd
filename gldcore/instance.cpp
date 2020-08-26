@@ -498,7 +498,7 @@ STATUS instance_init(instance *inst)
 	/* check for looping model */
 	if (strcmp(inst->model,global_modelname)==0)
 	{
-		output_error("instance_init(): slave instance model '%s' is the same as the master model '%'", inst->model,global_modelname);
+		output_error("instance_init(): slave instance model '%s' is the same as the master model '%'", inst->model,(const char*)global_modelname);
 		return FAILED;
 	}
 

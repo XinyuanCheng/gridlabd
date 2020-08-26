@@ -78,14 +78,16 @@ STATUS delta_init(void)
 	}
 	/* build qualified module list */
 	delta_modulecount = 0;
-	global_deltamode_updateorder[0]='\0';
+	global_deltamode_updateorder = "";
 	for ( module=module_get_first() ; module!=NULL ; module=module_get_next(module) )
 	{
 		if ( 0 != module->deltadesired )
 		{
-			if ( delta_modulecount>0 )
-				strcat(global_deltamode_updateorder,",");
-			strcat(global_deltamode_updateorder,module->name);
+			if ( delta_modulecount > 0 )
+			{
+				global_deltamode_updateorder.copy_from(",",-1);
+			}
+			global_deltamode_updateorder.copy_from(module->name,-1);
 			delta_modulelist[delta_modulecount++] = module;
 		}
 	}

@@ -526,7 +526,7 @@ static counters run_test(char *file, size_t id, double *elapsed_time=NULL)
 #ifdef WIN32
 		_pgmptr,
 #else
-		global_execname,
+		(const char*)global_execname,
 #endif
 		dir,validate_cmdargs, name);
 	dt = my_instance->get_exec()->clock() - dt;
@@ -794,7 +794,7 @@ int validate(void *main, int argc, const char *argv[])
 	if ( !redirect_found )
 		strcat(validate_cmdargs," --redirect all");
 	global_suppress_repeat_messages = 0;
-	output_message("Starting validation test in directory '%s'", global_workdir);
+	output_message("Starting validation test in directory '%s'", (const char*)global_workdir);
 	char var[64];
 	if ( global_getvar("clean",var,sizeof(var))!=NULL && atoi(var)!=0 ) clean = true;
 
@@ -802,7 +802,7 @@ int validate(void *main, int argc, const char *argv[])
 	if ( report_fp==NULL )
 		output_warning("unable to open '%s' for writing", report_file);
 	report_title("VALIDATION TEST REPORT");
-	report_title("%s %d.%d.%d-%d (%s)", PACKAGE_NAME,global_version_major, global_version_minor, global_version_patch, global_version_build, global_version_branch);
+	report_title("%s %d.%d.%d-%d (%s)", PACKAGE_NAME,global_version_major, global_version_minor, global_version_patch, global_version_build, (const char*)global_version_branch);
 	
 	report_newrow();
 	report_newtable("TEST CONFIGURATION");
@@ -837,7 +837,7 @@ int validate(void *main, int argc, const char *argv[])
 	
 	report_data();
 	report_data("Platform");
-	report_data("%d-bit %s %s", sizeof(void*)*8, global_platform,
+	report_data("%d-bit %s %s", sizeof(void*)*8, (const char*)global_platform,
 #ifdef _DEBUG
 		"DEBUG"
 #else
@@ -848,7 +848,7 @@ int validate(void *main, int argc, const char *argv[])
 	
 	report_data();
 	report_data("Workdir");
-	report_data("%s",global_workdir);
+	report_data("%s",(const char*)global_workdir);
 	report_newrow();
 	
 	report_data();
@@ -918,7 +918,7 @@ int validate(void *main, int argc, const char *argv[])
 	final.print();
 	double dt = (double)my_instance->get_exec()->clock()/(double)CLOCKS_PER_SEC;
 	output_message("Total validation elapsed time: %.1f seconds", dt);
-	if ( report_fp ) output_message("See '%s/%s' for details", global_workdir, report_file);
+	if ( report_fp ) output_message("See '%s/%s' for details", (const char*)global_workdir, report_file);
 	if ( final.get_nerrors()==0 )
 		my_instance->get_exec()->setexitcode(XC_SUCCESS);
 	else

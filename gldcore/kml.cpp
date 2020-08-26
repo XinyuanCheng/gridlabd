@@ -34,7 +34,7 @@ int kml_document(FILE *fp)
 	MODULE *mod;
 	char buffer[1024];
 	kml_write("%s","  <Document>\n");
-	kml_write("    <name>%s</name>\n", global_modelname);
+	kml_write("    <name>%s</name>\n", (const char*)global_modelname);
 	kml_write("    <description>%s-D results for %s</description>\n", PACKAGE_NAME,
 		convert_from_timestamp(global_clock,buffer,sizeof(buffer))?buffer:"unknown date/time");
 

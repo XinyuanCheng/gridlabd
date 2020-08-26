@@ -1526,7 +1526,7 @@ int timestamp_test(void)
 	}
 	output_test("END: round robin test",steptxt);
 	output_test("END: daylight saving time tests for %d to %d", YEAR0, YEAR0+NYEARS);
-	IN_MYCONTEXT output_verbose("daylight saving time tests: %d succeeded, %d failed (see '%s' for details)", succeeded, failed, global_testoutputfile);
+	IN_MYCONTEXT output_verbose("daylight saving time tests: %d succeeded, %d failed (see '%s' for details)", succeeded, failed, (const char*)global_testoutputfile);
 	return failed;
 }
 

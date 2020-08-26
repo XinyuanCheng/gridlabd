@@ -677,15 +677,19 @@ void GldExec::do_checkpoint(void)
 			/* default checkpoint filename */
 			if ( strcmp(global_checkpoint_file,"")==0 )
 			{
-				char *ext;
-
 				/* use the model name by default */
-				strcpy(global_checkpoint_file, global_modelname);
-				ext = strrchr(global_checkpoint_file,'.');
+				global_checkpoint_file = global_modelname;
+				int pos = global_checkpoint_file.findrev('.');
 
 				/* trim off the extension, if any */
-				if ( ext!=NULL && ( strcmp(ext,".glm")==0 || strcmp(ext,".xml")==0 ) )
-					*ext = '\0';
+				if ( pos >= 0 )
+				{
+					varchar ext(global_checkpoint_file.substr(pos));
+					if ( ext == ".glm" || ext == "xlm" )
+					{
+						global_checkpoint_file.set_at(pos,'\0');
+					}
+				}
 			}
 
 			/* delete old checkpoint file if not desired */
@@ -693,7 +697,7 @@ void GldExec::do_checkpoint(void)
 				unlink(fn);
 
 			/* create current checkpoint save filename */
-			sprintf(fn,"%s.%d",global_checkpoint_file,global_checkpoint_seqnum++);
+			sprintf(fn,"%s.%d",(const char*)global_checkpoint_file,global_checkpoint_seqnum++);
 			fp = fopen(fn,"w");
 			if ( fp==NULL )
 				output_error("unable to open checkpoint file '%s' for writing");

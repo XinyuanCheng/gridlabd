@@ -137,9 +137,6 @@ public:
 		} 
 	};
 
-#ifdef MAIN
-#warning change all char * to const char *
-#endif
 	inline char *resize(size_t len)
 	{
 		if ( len > *buflen )
@@ -156,6 +153,11 @@ public:
 	inline char *resize(const char *s)
 	{
 		return resize(strlen(s)+1);
+	}
+
+	inline operator void * () const
+	{
+		return (void*)this;
 	}
 
 	inline operator const char * () const

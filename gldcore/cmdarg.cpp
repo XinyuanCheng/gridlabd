@@ -259,7 +259,7 @@ STATUS GldCmdarg::no_cmdargs(void)
 		output_message("opening html page '%s'", htmlfile);
 		sprintf(cmd,"start %s file:///%s", global_browser, htmlfile);
 #elif defined(MACOSX)
-		sprintf(cmd,"open -a %s %s", global_browser, htmlfile);
+		sprintf(cmd,"open -a %s %s", (const char*)global_browser, htmlfile);
 #else
 		sprintf(cmd,"%s '%s' & ps -p $! >/dev/null", global_browser, htmlfile);
 #endif
@@ -273,12 +273,12 @@ STATUS GldCmdarg::no_cmdargs(void)
 		{
 			IN_MYCONTEXT output_verbose("starting interface");
 		}
-		strcpy(global_environment,"server");
+		global_environment = "server";
 		global_mainloopstate = MLS_PAUSED;
 		return SUCCESS;
 	}
 	else
-		output_error("default html file '%s' not found (workdir='%s')", "gridlabd.htm",global_workdir);
+		output_error("default html file '%s' not found (workdir='%s')", "gridlabd.htm",(const char*)global_workdir);
 
 	return SUCCESS;
 }
@@ -504,7 +504,8 @@ int GldCmdarg::server_inaddr(int argc, const char *argv[])
 {
 	if ( argc>1 )
 	{
-		strncpy(global_server_inaddr,(argc--,*++argv),sizeof(global_server_inaddr)-1);
+		argc--;
+		global_server_inaddr = *++argv;
 		return 1;
 	}
 	else
@@ -864,10 +865,14 @@ DEPRECATED static int pidfile(void *main, int argc, const char *argv[])
 int GldCmdarg::pidfile(int argc, const char *argv[])
 {
 	const char *filename = strchr(*argv,'=');
-	if (filename==NULL)
-		strcpy(global_pidfile,"gridlabd.pid");
+	if ( filename == NULL )
+	{
+		global_pidfile = "gridlabd.pid";
+	}
 	else
-		strcpy(global_pidfile,filename+1);
+	{
+		global_pidfile = filename+1;
+	}
 	return 0;
 }
 
@@ -878,10 +883,14 @@ DEPRECATED static int kml(void *main, int argc, const char *argv[])
 int GldCmdarg::kml(int argc, const char *argv[])
 {
 	const char *filename = strchr(*argv,'=');
-	if (filename)
-		strcpy(global_kmlfile,filename+1);
+	if ( filename != NULL )
+	{
+		global_kmlfile = filename + 1;
+	}
 	else
-		strcpy(global_kmlfile,"gridlabd.kml");
+	{
+		global_kmlfile = "gridlabd.kml";
+	}
 	return 0;
 }
 
@@ -1332,7 +1341,8 @@ int GldCmdarg::output(int argc, const char *argv[])
 {
 	if (argc>1)
 	{
-		strcpy(global_savefile,(argc--,*++argv));
+		argc--;
+		global_savefile = *++argv;
 		return 1;
 	}
 	else
@@ -1354,7 +1364,10 @@ DEPRECATED static int environment(void *main, int argc, const char *argv[])
 int GldCmdarg::environment(int argc, const char *argv[])
 {
 	if (argc>1)
-		strcpy(global_environment,(argc--,*++argv));
+	{
+		argc--;
+		global_environment = *++argv;
+	}
 	else
 	{
 		output_fatal("environment not specified");
@@ -1467,7 +1480,7 @@ DEPRECATED static int server(void *main, int argc, const char *argv[])
 }
 int GldCmdarg::server(int argc, const char *argv[])
 {
-	strcpy(global_environment,"server");
+	global_environment = "server";
 	return 0;
 }
 
@@ -1550,7 +1563,7 @@ int GldCmdarg::info(int argc, const char *argv[])
 #ifdef WIN32
 		sprintf(cmd,"start %s \"%s%s\"", global_browser, global_infourl, argv[1]);
 #elif defined(MACOSX)
-		sprintf(cmd,"open -a %s \"%s%s\"", global_browser, global_infourl, argv[1]);
+		sprintf(cmd,"open -a %s \"%s%s\"", (const char*)global_browser, (const char*)global_infourl, argv[1]);
 #else
 		sprintf(cmd,"%s \"%s%s\" & ps -p $! >/dev/null", global_browser, global_infourl, argv[1]);
 #endif
@@ -1598,7 +1611,7 @@ int GldCmdarg::slave(int argc, const char *argv[])
 		output_error("unable to parse slave parameters");
 	}
 
-	strncpy(global_master,host,sizeof(global_master)-1);
+	global_master = host;
 	if ( strcmp(global_master,"localhost")==0 ){
 		sscanf(port,"%" FMT_INT64 "x",&global_master_port); /* port is actual mmap/shmem */
 		global_multirun_connection = MRC_MEM;
@@ -1611,11 +1624,11 @@ int GldCmdarg::slave(int argc, const char *argv[])
 
 	if ( FAILED == instance_slave_init() )
 	{
-		output_error("slave instance init failed for master '%s' connection '%" FMT_INT64 "x'", global_master, global_master_port);
+		output_error("slave instance init failed for master '%s' connection '%" FMT_INT64 "x'", (const char*)global_master, global_master_port);
 		return CMDERR;
 	}
 
-	IN_MYCONTEXT output_verbose("slave instance for master '%s' using connection '%" FMT_INT64 "x' started ok", global_master, global_master_port);
+	IN_MYCONTEXT output_verbose("slave instance for master '%s' using connection '%" FMT_INT64 "x' started ok", (const char*)global_master, global_master_port);
 	return 1;
 }
 
@@ -1830,15 +1843,15 @@ int GldCmdarg::workdir(int argc, const char *argv[])
 		output_error("--workdir requires a directory argument");
 		return CMDERR;
 	}
-	strcpy(global_workdir,argv[1]);
+	global_workdir = argv[1];
 	if ( chdir(global_workdir)!=0 )
 	{
-		output_error("%s is not a valid workdir", global_workdir);
+		output_error("%s is not a valid workdir", (const char*)global_workdir);
 		return CMDERR;
 	}
-	if ( getcwd(global_workdir,sizeof(global_workdir)) )
+	if ( getcwd(global_workdir.resize(PATH_MAX),PATH_MAX+1) )
 	{
-		IN_MYCONTEXT output_verbose("working directory is '%s'", global_workdir);
+		IN_MYCONTEXT output_verbose("working directory is '%s'", (const char*)global_workdir);
 		return 1;
 	}
 	else
@@ -1916,18 +1929,18 @@ int GldCmdarg::formats(int argc, const char *argv[])
 
 	cout << "\t\"glm\" : {" << endl;
 	cout << "\t\t\"json\" : {" << endl;
-	cout << "\t\t\t\"run\" : \"" << global_execname << " {inputfile} -o {outputfile}\"" << endl;
+	cout << "\t\t\t\"run\" : \"" << (const char*)global_execname << " {inputfile} -o {outputfile}\"" << endl;
 	cout << "\t\t}" << endl;
 	cout << "\t}," << endl;
 
 	// TODO: use a directory listing to get all available converters
 	cout << "\t\"json\" : {" << endl;
 	cout << "\t\t\"glm\" : {" << endl;
-	cout << "\t\t\t\"run\" : \"" << global_datadir << "/json2glm.py {inputfile} -o {outputfile}\"" << endl;
+	cout << "\t\t\t\"run\" : \"" << (const char*)global_datadir << "/json2glm.py {inputfile} -o {outputfile}\"" << endl;
 	cout << "\t\t}," << endl;
 	
 	cout << "\t\t\"png\" : {" << endl;
-	cout << "\t\t\t\"run\" : \"" << global_datadir << "/json2png.py {inputfile} -o {outputfile}\"" << endl;
+	cout << "\t\t\t\"run\" : \"" << (const char*)global_datadir << "/json2png.py {inputfile} -o {outputfile}\"" << endl;
 	cout << "\t\t\t\"type\" : [" << endl;
 	cout << "\t\t\t\t\"summary\"," << endl;
 	cout << "\t\t\t\t\"profile\"" << endl;
@@ -2306,7 +2319,7 @@ STATUS GldCmdarg::load(int argc,const char *argv[])
 					/* preserve name of first model only */
 					if (strcmp(global_modelname,"")==0)
 					{
-						strcpy(global_modelname,*argv);
+						global_modelname = *argv;
 					}
 
 					if ( ! instance->load_file(*argv) )

@@ -906,7 +906,7 @@ int output_xsl(const char *fname, int n_mods, const char *p_mods[])
 				GLOBALVAR *stylesheet = global_find("stylesheet");
 				fprintf(fp,"<title>%s <xsl:value-of select=\"version.major\"/>.<xsl:value-of select=\"version.minor\"/> - <xsl:value-of select=\"modelname\"/></title>\n",PACKAGE_NAME);
 				if (stylesheet==NULL || stylesheet->prop->ptype!=PT_char1024) /* only char1024 is allowed */
-					fprintf(fp,"<link rel=\"stylesheet\" href=\"%sgridlabd-%d_%d.css\" type=\"text/css\"/>\n",global_urlbase,global_version_major,global_version_minor);
+					fprintf(fp,"<link rel=\"stylesheet\" href=\"%sgridlabd-%d_%d.css\" type=\"text/css\"/>\n",(const char*)global_urlbase,global_version_major,global_version_minor);
 				else
 					fprintf(fp,"<link rel=\"stylesheet\" href=\"%s.css\" type=\"text/css\"/>\n",stylesheet->prop->name);
 			}

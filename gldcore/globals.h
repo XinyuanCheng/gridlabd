@@ -203,16 +203,16 @@ GLOBAL unsigned global_version_patch INIT(REV_PATCH); /**< The software's patch 
 GLOBAL unsigned global_version_build INIT(BUILDNUM); /**< The software's build number */
 
 /* Variable: global_version_branch */
-GLOBAL char global_version_branch[256] INIT(BRANCH); /**< The software's branch designator */
+GLOBAL varchar global_version_branch INIT(BRANCH); /**< The software's branch designator */
 
 /* Variable: global_version */
-GLOBAL char global_version[1024] INIT(""); /**< The software's official version designation */
+GLOBAL varchar global_version INIT(""); /**< The software's official version designation */
 
 /* Variable: global_command_line */
-GLOBAL char global_command_line[1024]; /**< The current command-line */
+GLOBAL varchar global_command_line INIT(""); /**< The current command-line */
 
 /* Variable: global_environment */
-GLOBAL char global_environment[1024] INIT("batch"); /**< The processing environment in use */
+GLOBAL varchar global_environment INIT("batch"); /**< The processing environment in use */
 
 /* Variable: global_quiet_mode */
 GLOBAL int global_quiet_mode INIT(FALSE); /**< The quiet mode flag */
@@ -242,13 +242,13 @@ GLOBAL double global_progress INIT(0.0); /**< Progress fraction */
 GLOBAL unsigned global_iteration_limit INIT(100); /**< The global iteration limit */
 
 /* Variable: global_workdir */
-GLOBAL char global_workdir[1024] INIT("."); /**< The current working directory */
+GLOBAL varchar global_workdir INIT("."); /**< The current working directory */
 
 /* Variable: global_dumpfile */
-GLOBAL char global_dumpfile[1024] INIT("gridlabd.json"); /**< The dump file name */
+GLOBAL varchar global_dumpfile INIT("gridlabd.json"); /**< The dump file name */
 
 /* Variable: global_savefile */
-GLOBAL char global_savefile[1024] INIT(""); /**< The save file name */
+GLOBAL varchar global_savefile INIT(""); /**< The save file name */
 
 /* Variable: global_dumpall */
 GLOBAL int global_dumpall INIT(FALSE);	/**< Flags all modules to dump data after run complete */
@@ -267,28 +267,28 @@ GLOBAL int global_profiler INIT(0); /**< Flags the profiler to process class per
 GLOBAL int global_pauseatexit INIT(0); /**< Enable a pause for user input after exit */
 
 /* Variable: global_testoutputfile */
-GLOBAL char global_testoutputfile[1024] INIT("test.txt"); /**< Specifies the test output file */
+GLOBAL varchar global_testoutputfile INIT("test.txt"); /**< Specifies the test output file */
 
 /* Variable: global_xml_encoding */
 GLOBAL int global_xml_encoding INIT(8);  /**< Specifies XML encoding (default is 8) */
 
 /* Variable: global_pidfile */
-GLOBAL char global_pidfile[1024] INIT(""); /**< Specifies that a process id file should be created */
+GLOBAL varchar global_pidfile INIT(""); /**< Specifies that a process id file should be created */
 
 /* Variable: global_no_balance */
-GLOBAL unsigned char global_no_balance INIT(FALSE);
+GLOBAL bool global_no_balance INIT(FALSE);
 
 /* Variable: global_kmlfile */
-GLOBAL char global_kmlfile[1024] INIT(""); /**< Specifies KML file to dump */
+GLOBAL varchar global_kmlfile INIT(""); /**< Specifies KML file to dump */
 
 /* Variable: global_kmlhost */
-GLOBAL char global_kmlhost[1024] INIT("https://raw.githubusercontent.com/slacgismo/gridlabd/master/gldcore/rt"); /**< Specifies the KML image library server */
+GLOBAL varchar global_kmlhost INIT("https://raw.githubusercontent.com/slacgismo/gridlabd/master/gldcore/rt"); /**< Specifies the KML image library server */
 
 /* Variable: global_modelname */
-GLOBAL char global_modelname[1024] INIT(""); /**< Name of the current model */
+GLOBAL varchar global_modelname INIT(""); /**< Name of the current model */
 
 /* Variable: global_execdir */
-GLOBAL char global_execdir[1024] INIT(""); /**< Path to folder containing installed application files */
+GLOBAL varchar global_execdir INIT(""); /**< Path to folder containing installed application files */
 
 /* Variable: global_strictnames */
 GLOBAL bool global_strictnames INIT(true); /**< Enforce strict global naming (prevents globals from being implicitly created by assignment) */
@@ -300,7 +300,7 @@ GLOBAL bool global_xmlstrict INIT(true); /**< Causes XML I/O to use strict XML d
 GLOBAL int global_relax_naming_rules INIT(0); /**< Causes the error to relax to a warning when object names start with numbers or special characters */
 
 /* Variable: global_urlbase */
-GLOBAL char global_urlbase[1024] /**< default urlbase used for online resources */
+GLOBAL varchar global_urlbase /**< default urlbase used for online resources */
 #ifdef _DEBUG
 	INIT("./");
 #else
@@ -314,13 +314,13 @@ GLOBAL unsigned int global_randomseed INIT(0); /**< random number seed (default 
 GLOBAL unsigned int global_randomstate INIT(0);
 
 /* Variable: global_include */
-GLOBAL char global_include[1024] INIT(""); /**< include path for models and code headers */
+GLOBAL varchar global_include INIT(""); /**< include path for models and code headers */
 
 /* Variable: global_gdb */
 GLOBAL int global_gdb INIT(0); /**< select gdb debugger */
 
 /* Variable: global_trace */
-GLOBAL char global_trace[1024] INIT(""); /**< comma separate list of runtime calls that will be traced */
+GLOBAL varchar global_trace INIT(""); /**< comma separate list of runtime calls that will be traced */
 
 /* Variable: global_gdb_window */
 GLOBAL int global_gdb_window INIT(0); /**< start gdb in a separate window */
@@ -329,10 +329,10 @@ GLOBAL int global_gdb_window INIT(0); /**< start gdb in a separate window */
 GLOBAL int global_process_id INIT(0); /**< the main process id */
 
 /* Variable: global_execname*/
-GLOBAL char global_execname[1024] INIT(""); /**< the main program full path */
+GLOBAL varchar global_execname INIT(""); /**< the main program full path */
 
 /* Variable: global_tmp */
-GLOBAL char global_tmp[1024] /**< location for temp files */
+GLOBAL varchar global_tmp /**< location for temp files */
 #ifdef WIN32
 							INIT("C:\\WINDOWS\\TEMP");
 #else
@@ -371,16 +371,16 @@ GLOBAL TIMESTAMP global_starttime INIT(946684800); /**< The simulation starting 
 GLOBAL TIMESTAMP global_stoptime INIT(TS_NEVER); /**< The simulation stop time (default is 1 year after start time) */
 
 /* Variable: global_double_format */
-GLOBAL char global_double_format[32] INIT("%+lg"); /**< the format to use when processing real numbers */
+GLOBAL varchar global_double_format INIT("%+lg"); /**< the format to use when processing real numbers */
 
 /* Variable: global_complex_format */
-GLOBAL char global_complex_format[256] INIT("%+lg%+lg%c"); /**< the format to use when processing complex numbers */
+GLOBAL varchar global_complex_format INIT("%+lg%+lg%c"); /**< the format to use when processing complex numbers */
 
 /* Variable: global_object_format */
-GLOBAL char global_object_format[32] INIT("%s:%d"); 
+GLOBAL varchar global_object_format INIT("%s:%d"); 
 
 /* Variable: global_object_scan */
-GLOBAL char global_object_scan[32] INIT("%[^:]:%d"); /**< the format to use when scanning for object ids */
+GLOBAL varchar global_object_scan INIT("%[^:]:%d"); /**< the format to use when scanning for object ids */
 
 /* Variable: global_minimum_timestep */
 GLOBAL int global_minimum_timestep INIT(1); /**< the minimum timestep allowed */
@@ -389,7 +389,7 @@ GLOBAL int global_minimum_timestep INIT(1); /**< the minimum timestep allowed */
 GLOBAL int global_maximum_synctime INIT(60); /**< the maximum time allotted to any single sync call */
 
 /* Variable: global_platform */
-GLOBAL char global_platform[8] /**< the host operating platform */
+GLOBAL varchar global_platform /**< the host operating platform */
 #ifdef WIN32
 	INIT("WINDOWS");
 #elif __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1050
@@ -415,7 +415,7 @@ GLOBAL double global_realtime_metric INIT(0); /**< realtime performance metric (
 
 #ifdef _DEBUG /** @todo: consider making global_sync_dumpfile always available */
 /* Variable: global_sync_dumpfile */
-GLOBAL char global_sync_dumpfile[1024] INIT(""); /**< enable sync event dump file */
+GLOBAL varchar global_sync_dumpfile INIT(""); /**< enable sync event dump file */
 #endif
 
 /* Variable: global_streaming_io_enabled */
@@ -434,13 +434,13 @@ GLOBAL int global_initializeonly INIT(0); /**< flag to enable initialize-only op
 GLOBAL int global_server_portnum INIT(0); /**< port used in server mode (6267 was assigned by IANA Dec 2010) */
 
 /* Variable: global_server_inaddr */
-GLOBAL char global_server_inaddr[1024] INIT(""); /**< interface address to bind server to */
+GLOBAL varchar global_server_inaddr INIT(""); /**< interface address to bind server to */
 
 /* Variable: global_client_allowed */
-GLOBAL char global_client_allowed[1024] INIT(""); /**< internet address from which clients can be accepted */
+GLOBAL varchar global_client_allowed INIT(""); /**< internet address from which clients can be accepted */
 
 /* Variable: global_browser */
-GLOBAL char global_browser[1024] /**< default browser to use for GUI */
+GLOBAL varchar global_browser /**< default browser to use for GUI */
 #ifdef WIN32
 	INIT("iexplore"); 
 #elif defined(MACOSX)
@@ -465,7 +465,7 @@ GLOBAL int global_show_progress INIT(1);
 GLOBAL int global_checkpoint_type INIT(CPT_NONE); /**< checkpoint type determines whether and how checkpoints are used */
 
 /* Variable: global_checkpoint_file */
-GLOBAL char global_checkpoint_file[1024] INIT(""); /**< checkpoint file name is base name used for checkpoint save files */
+GLOBAL varchar global_checkpoint_file INIT(""); /**< checkpoint file name is base name used for checkpoint save files */
 
 /* Variable: global_checkpoint_seqnum */
 GLOBAL int global_checkpoint_seqnum INIT(0); /**< checkpoint sequence file number */
@@ -497,13 +497,13 @@ GLOBAL int global_mainloopstate INIT(MLS_INIT); /**< main loop processing state 
 GLOBAL TIMESTAMP global_mainlooppauseat INIT(TS_NEVER); /**< time at which to pause main loop */
 
 /* Variable:  */
-GLOBAL char global_infourl[1024] INIT("http://docs.gridlabd.us/index.html?owner=slacgismo&project=gridlabd&search="); /**< URL for info calls */
+GLOBAL varchar global_infourl INIT("http://docs.gridlabd.us/index.html?owner=slacgismo&project=gridlabd&search="); /**< URL for info calls */
 
 /* Variable:  */
-GLOBAL char global_hostname[1024] INIT("localhost"); /**< machine hostname */
+GLOBAL varchar global_hostname INIT("localhost"); /**< machine hostname */
 
 /* Variable:  */
-GLOBAL char global_hostaddr[32] INIT("127.0.0.1"); /**< machine ip addr */
+GLOBAL varchar global_hostaddr INIT("127.0.0.1"); /**< machine ip addr */
 
 /* Variable:  */
 GLOBAL int global_autostartgui INIT(1); /**< autostart GUI when no command args are given */
@@ -543,7 +543,7 @@ GLOBAL DELTAT global_deltaclock INIT(0); /**< the cumulative delta runtime with 
 GLOBAL double global_delta_curr_clock INIT(0.0);	/**< Deltamode clock offset by main clock (not just delta offset) */
 
 /* Variable:  */
-GLOBAL char global_deltamode_updateorder[1025] INIT(""); /**< the order in which modules are updated */
+GLOBAL varchar global_deltamode_updateorder INIT(""); /**< the order in which modules are updated */
 
 /* Variable:  */
 GLOBAL unsigned int global_deltamode_iteration_limit INIT(10);	/**< Global iteration limit for each delta timestep (object and interupdate calls) */
@@ -555,7 +555,7 @@ GLOBAL unsigned int global_deltamode_forced_extra_timesteps INIT(0);	/**< Deltam
 GLOBAL bool global_deltamode_forced_always INIT(false);	/**< Deltamode flag - prevents exit from deltamode (no SM_EVENT) -- mainly for debugging purposes */
 
 /* Variable:  */
-GLOBAL char global_master[1024] INIT(""); /**< master hostname */
+GLOBAL varchar global_master INIT(""); /**< master hostname */
 
 /* Variable:  */
 GLOBAL unsigned int64 global_master_port INIT(0);	/**< master port/mmap/shmem info */

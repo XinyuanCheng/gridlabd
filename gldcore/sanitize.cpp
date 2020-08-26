@@ -97,7 +97,7 @@ int sanitize(void *main, int argc, const char *argv[])
 			if ( varchar(global_sanitizeindex.substr(-4)) == ".xml" )
 			{
 				fprintf(fp,"<data>\n");
-				fprintf(fp,"\t<modelname>%s</modelname>\n",global_modelname);
+				fprintf(fp,"\t<modelname>%s</modelname>\n",(const char*)global_modelname);
 				fprintf(fp,"\t<geographic_offsets>\n");
 				fprintf(fp,"\t\t<latitude>%.6f</latitude>\n",delta_latitude);
 				fprintf(fp,"\t\t<longitude>%.6f</longitude>\n",delta_longitude);
@@ -111,7 +111,7 @@ int sanitize(void *main, int argc, const char *argv[])
 			else if ( varchar(global_sanitizeindex.substr(-4)) == ".json" )
 			{
 				fprintf(fp,"{\n");
-				fprintf(fp,"  \"modelname\" : \"%s\",\n",global_modelname);
+				fprintf(fp,"  \"modelname\" : \"%s\",\n",(const char*)global_modelname);
 				fprintf(fp,"  \"geographic_offsets\" : {\n");
 				fprintf(fp,"    \"latitude\" : %.6f,\n",delta_latitude);
 				fprintf(fp,"    \"longitude\" : %.6f\n",delta_longitude);
@@ -124,7 +124,7 @@ int sanitize(void *main, int argc, const char *argv[])
 			}
 			else
 			{
-				fprintf(fp,"modelname\t= %s\n", global_modelname);
+				fprintf(fp,"modelname\t= %s\n", (const char*)global_modelname);
 				fprintf(fp,"\n[POSITIONS]\n");
 				fprintf(fp,"latitude\t= %.6f\n",delta_latitude);
 				fprintf(fp,"longitude\t= %.6f\n",delta_longitude);

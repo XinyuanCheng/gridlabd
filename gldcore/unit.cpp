@@ -849,7 +849,7 @@ int unit_test(void)
 		}
 	}
 	output_test("END: %d units tested", n);
-	IN_MYCONTEXT output_verbose("units tested: %d ok, %d failed (see '%s' for details).", succeeded, failed, global_testoutputfile);
+	IN_MYCONTEXT output_verbose("units tested: %d ok, %d failed (see '%s' for details).", succeeded, failed, (const char*)global_testoutputfile);
 	return failed;
 }
 

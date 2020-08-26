@@ -327,7 +327,7 @@ int job(void *main, int argc, const char *argv[])
 	if ( !redirect_found )
 		strcat(job_cmdargs," --redirect all");
 	global_suppress_repeat_messages = 0;
-	output_message("Starting job in directory '%s'", global_workdir);
+	output_message("Starting job in directory '%s'", (const char*)global_workdir);
 	char var[64];
 	if ( global_getvar("clean",var,sizeof(var))!=NULL && atoi(var)!=0 ) clean = true;
 
@@ -338,7 +338,7 @@ int job(void *main, int argc, const char *argv[])
 	unsigned int count = (int)process_dir(global_workdir);
 	if ( count==0 )
 	{
-		output_warning("no models found to process job in workdir '%s'", global_workdir);
+		output_warning("no models found to process job in workdir '%s'", (const char*)global_workdir);
 		exit(XC_RUNERR);
 	}
 	

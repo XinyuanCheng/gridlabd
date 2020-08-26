@@ -630,7 +630,7 @@ static bool _checkimg(const char *fname)
 }
 #endif
 
-static void _module_list (char *path)
+static void _module_list (const char *path)
 {
 	struct stat info;
 	static int count = 0;
@@ -1740,7 +1740,7 @@ typedef struct s_gldprocinfo {
 	TIMESTAMP starttime;		/* sim starttime */
 	TIMESTAMP stoptime;		/* sim stoptime */
 	enumeration status;		/* current status */
-	char1024 model;			/* model name */
+	char model[1024];			/* model name */
 	time_t start;			/* wall time of start */
 } GLDPROCINFO;
 static GLDPROCINFO *process_map = NULL; /* global process map */
@@ -2127,7 +2127,7 @@ MYPROCINFO *sched_allocate_procs(unsigned int n_threads, pid_t pid)
 		my_proc->list[t] = n;
 		process_map[n].pid = pid;
 		IN_MYCONTEXT output_debug("module.c/sched_allocate_procs(): assigned processor %d to pid %d\n", n, pid);
-		process_map[n].model = global_modelname;
+		global_modelname.copy_to(process_map[n].model,sizeof(process_map[n].model));
 		process_map[n].start = time(NULL);
 		sched_unlock(n);
 

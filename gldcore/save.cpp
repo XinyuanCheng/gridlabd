@@ -200,8 +200,8 @@ int saveglm(const char *filename,FILE *fp)
 	count += fprintf(fp,"// BEGIN");
 	count += fprintf(fp,"\n////////////////////////////////////////////////////////\n");
 	count += fprintf(fp,"// filename... %s\n", filename);
-	count += fprintf(fp,"// workdir.... %s\n", global_workdir);
-	count += fprintf(fp,"// command.... %s\n", global_command_line);
+	count += fprintf(fp,"// workdir.... %s\n", (const char*)global_workdir);
+	count += fprintf(fp,"// command.... %s\n", (const char*)global_command_line);
 	count += fprintf(fp,"// created.... %s", asctime(localtime(&now)));
 	count += fprintf(fp,"// user....... %s\n",
 #ifdef WIN32
@@ -310,7 +310,8 @@ int savexml_strict(const char *filename,FILE *fp)
 
 	count += fprintf(fp,"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
 	if (stylesheet==NULL || stylesheet->prop->ptype!=PT_char1024) /* only char1024 is allowed */
-		count += fprintf(fp,"<?xml-stylesheet href=\"%sgridlabd-%d_%d.xsl\" type=\"text/xsl\"?>\n",global_urlbase,global_version_major,global_version_minor);
+		count += fprintf(fp,"<?xml-stylesheet href=\"%sgridlabd-%d_%d.xsl\" type=\"text/xsl\"?>\n",
+			(const char*)global_urlbase,global_version_major,global_version_minor);
 	else 
 		count += fprintf(fp,"<?xml-stylesheet href=\"%s.xsl\" type=\"text/xsl\"?>\n",stylesheet->prop->name);
 	count += fprintf(fp,"<gridlabd>\n");
