@@ -143,6 +143,7 @@ public:
 		{
 			*buflen = ::pow(2,::ceil(::log(len+1)/::log(2)));
 			char *bigger = new char[*buflen];
+			memset(bigger,0,*buflen);
 			strncpy(bigger,*bufptr,(*buflen)-1);
 			delete [] *bufptr;
 			*bufptr = bigger;
@@ -325,17 +326,24 @@ public:
 	{ 
 		va_list ptr; 
 		va_start(ptr,fmt); 
-		size_t len = vformat(fmt,ptr);
-		va_end(ptr); 
-		return len; 
+		int len = vformat(fmt,ptr);
+		va_end(ptr);
+		return len;
 	};
 
 	// Method: vformat
 	inline size_t vformat(const char *fmt, va_list ptr) 
 	{ 
-		size_t len = vsnprintf(NULL,0,fmt,ptr);
+		char *buf = NULL;
+		int len = vasprintf(&buf,fmt,ptr);
+		if ( len < 0 || buf == NULL )
+		{
+			return -1;
+		}
 		resize(len+1);
-		return vsnprintf(*bufptr,(*buflen)-1,fmt,ptr); 
+		copy_from(buf);
+		free(buf);
+		return len;
 	};
 };
 

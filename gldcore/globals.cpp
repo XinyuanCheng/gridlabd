@@ -360,32 +360,35 @@ DEPRECATED static struct s_varmap {
 
 DEPRECATED static void buildtmp(void)
 {
-	const char *tmp, *home, *user;
+	const char *tmp = getenv("GLTEMP");
+	const char *home = getenv(HOMEVAR);
+	const char *user = getenv(USERVAR);
 
-	if ( (tmp = getenv("GLTEMP")) != NULL ) 
+	if ( tmp != NULL ) 
 	{
 		global_tmp.format("%s",tmp);
 		return;
 	}
-	if ( (home = getenv(HOMEVAR)) != NULL ) 
+	if ( home != NULL ) 
 	{
 #ifdef WIN32
-		char *drive;
-		if ( ! (drive=getenv("HOMEDRIVE")) )
-		{
-			drive = "";
-		}
-		global_tmp.format("%s%s\\Local Settings\\Temp\\gridlabd", drive, home);
+		char *drive = getenv("HOMEDRIVE");
+		global_tmp.format("%s%s\\Local Settings\\Temp\\gridlabd", drive?drive:"", home);
 #else
 		global_tmp.format("%s/.gridlabd/tmp", home);
 #endif
 		return;
 	}
-	if (!(tmp = getenv("TMP")) && !(tmp = getenv("TEMP")))
+	tmp = getenv("TMP");
+	if ( tmp == NULL ) 
+	{
+		tmp = getenv("TEMP");
+	}
+	if ( tmp == NULL )
+	{
 		tmp = TMP;
-	user = getenv(USERVAR);
-	global_tmp.format("%s%s%s" PATHSEP PACKAGE,
-			tmp, (user ? PATHSEP : ""), (user ? user : ""));
+	}
+	global_tmp.format("%s%s%s" PATHSEP PACKAGE, tmp, (user ? PATHSEP : ""), (user ? user : ""));
 }
 
 /** Register global variables
@@ -403,7 +406,7 @@ STATUS GldGlobals::init(void)
 	global_version_build = version_build();
 	global_version_branch = version_branch();
 	global_datadir = global_execdir;
-	size_t bin = global_datadir.find("/bin");
+	size_t bin = global_datadir.findrev("/bin");
 	global_datadir.copy_from("/share/gridlabd",bin);
 	global_version.format("%d.%d.%d-%d-%s",
 		global_version_major,global_version_minor,global_version_patch,
