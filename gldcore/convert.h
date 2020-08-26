@@ -67,10 +67,13 @@ DEPRECATED int convert_from_int64(char *buffer, int size, void *data, PROPERTY *
 // Function: convert_to_int64
 DEPRECATED int convert_to_int64(const char *buffer, void *data, PROPERTY *prop);
 
-// Function: convert_from_char1024
+// Function: varchar_create
+DEPRECATED int varchar_create(void *data);
+
+// Function: convert_from_varchar
 DEPRECATED int convert_from_varchar(char *buffer, int size, void *data, PROPERTY *prop);
 
-// Function: convert_to_char1024
+// Function: convert_to_varchar
 DEPRECATED int convert_to_varchar(const char *buffer, void *data, PROPERTY *prop);
 
 // Function: convert_from_object

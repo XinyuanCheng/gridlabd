@@ -701,6 +701,18 @@ int convert_to_int64(const char *buffer, /**< a pointer to the string buffer */
 	return sscanf(buffer,"%lld",(long long *)data);
 }
 
+
+/** Convert to a \e varchar
+	Converts a string to a new \e varchar property.  
+	@return 1 on success, 0 on failure, -1 if conversion was incomplete
+ **/
+DEPRECATED int varchar_create(void *data)
+{
+	varchar v;
+	*((varchar*)data) = v;
+	return 1;
+}
+
 /** Convert from a \e varchar
 	Converts a \e varchar property to a string.  
 	@return the number of character written to the string
