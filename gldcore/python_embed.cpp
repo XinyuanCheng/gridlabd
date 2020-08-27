@@ -13,7 +13,12 @@ void python_embed_init(int argc, const char *argv[])
 {
     program = Py_DecodeLocale(argv[0],NULL);
     Py_SetProgramName(program);
-    Py_Initialize();
+    Py_InitializeEx(0);
+    if ( ! Py_IsInitialized() )
+    {
+        throw_exception("python_embed_init(argc=%d,argv=(%s,...)): python initialization failed",argc,argv?argv[0]:"NULL");
+    }
+
     main_module = PyModule_GetDict(PyImport_AddModule("__main__"));
     if ( main_module == NULL )
     {
@@ -39,7 +44,7 @@ void *python_loader_init(int argc, const char **argv)
 
 void python_embed_term()
 {
-    if ( Py_FinalizeEx() )
+    if ( Py_IsInitialized() && Py_FinalizeEx() )
     {
         output_warning("Py_FinalizeEx() failed");
     }

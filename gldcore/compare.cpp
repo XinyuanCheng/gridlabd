@@ -44,6 +44,16 @@
 #define COMPARE_SIN(T) int compare_tc_##T##_in(void* x,void* a,void* b) { return strcmp((char*)x,(char*)a)!=-1 && b!=NULL && strcmp((char*)x,(char*)b)!=1; }
 #define COMPARE_SNI(T) int compare_tc_##T##_ni(void* x,void* a,void* b) { return !(strcmp((char*)x,(char*)a)!=-1 && b!=NULL && strcmp((char*)x,(char*)b)!=1); }
 
+#define COMPAREOPC(T) COMPARE_CEQ(T) COMPARE_CLE(T) COMPARE_CGE(T) COMPARE_CNE(T) COMPARE_CLT(T) COMPARE_CGT(T) COMPARE_CIN(T) COMPARE_CNI(T)
+#define COMPARE_CEQ(T) int compare_tc_##T##_eq(void* x,void* a,void* b) { return *(varchar*)x == (char*)a; }
+#define COMPARE_CLE(T) int compare_tc_##T##_le(void* x,void* a,void* b) { return *(varchar*)x <= (char*)a; }
+#define COMPARE_CGE(T) int compare_tc_##T##_ge(void* x,void* a,void* b) { return *(varchar*)x >= (char*)a; }
+#define COMPARE_CNE(T) int compare_tc_##T##_ne(void* x,void* a,void* b) { return *(varchar*)x != (char*)a; }
+#define COMPARE_CLT(T) int compare_tc_##T##_lt(void* x,void* a,void* b) { return *(varchar*)x < (char*)a; }
+#define COMPARE_CGT(T) int compare_tc_##T##_gt(void* x,void* a,void* b) { return *(varchar*)x > (char*)a; }
+#define COMPARE_CIN(T) int compare_tc_##T##_in(void* x,void* a,void* b) { return *(varchar*)a <= (char*)x && b!=NULL && *(varchar*)x <= (char*)b; }
+#define COMPARE_CNI(T) int compare_tc_##T##_ni(void* x,void* a,void* b) { return !(*(varchar*)a <= (char*)x && b!=NULL && *(varchar*)x <= (char*)b); }
+
 /* basic ops */
 COMPAREOPF(double)
 COMPAREOPF(float)
@@ -53,3 +63,4 @@ COMPAREOPI(uint64)
 COMPAREOPB(bool)
 COMPAREOPS(string)
 COMPAREOPO(object)
+COMPAREOPC(varchar)

@@ -89,5 +89,6 @@ TCOPD(string);
 TCOPD(bool);
 TCOPD(timestamp);
 TCOPD(object);
+TCOPD(varchar);
 
 #endif
