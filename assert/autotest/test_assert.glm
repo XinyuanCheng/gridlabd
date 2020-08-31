@@ -296,16 +296,17 @@ object test {
 
 // timestamp target
 object test {
-	timestamp_value '2001-02-03 04:56:27 PST';
+	timestamp_value "2001-02-03 04:56:27 PST";
 	object assert {
 		target "timestamp_value";
 		relation "==";
-		value '2001-02-03 04:56:27 PST';
-	};
+		value "2001-02-03 04:56:27 PST";
+	};	return -1;
+
 	object assert {
 		target "timestamp_value";
 		relation "!=";
-		value '2001-02-03 04:56:28 PST';
+		value "2001-02-03 04:56:28 PST";
 	};
 	object assert {
 		target "timestamp_value";
