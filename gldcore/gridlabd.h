@@ -3291,44 +3291,45 @@ public:
 	inline gld_keyword* find_keyword(const char *name) { return get_first_keyword()->find(name); };
 
 	// Method: compare(char *op, char *a, char *b=NULL, char *p=NULL)
-	inline bool compare(const char *op, const char *a, const char *b=NULL, char *p=NULL) 
+	inline bool compare(const char *op, const char *a, const char *b=NULL, const char *p=NULL) 
 	{ 
 		PROPERTYCOMPAREOP n = callback->properties.get_compare_op(pstruct.prop->ptype,op); 
 		if (n==TCOP_ERR) throw "invalid property compare operation"; 
-		return compare((enumeration)n,a,b,p); 
+		return compare(n,a,b,p); 
 	};
 
-	// Method: compare(enumeration op, char *a, char *b=NULL) 
-	inline bool compare(enumeration op, const char *a, const char *b=NULL) 
-	{ 
-		char v1[1024], v2[1024]; 
-		return callback->convert.string_to_property(pstruct.prop,(void*)v1,a)>0 && callback->properties.compare_basic(pstruct.prop->ptype,(PROPERTYCOMPAREOP)op,get_addr(),(void*)v1,(b&&callback->convert.string_to_property(pstruct.prop,(void*)v2,b)>0)?(void*)v2:NULL, NULL);
-	};
-
-	// Method: compare(enumeration op, char *a, char *b, char *p) 
-	inline bool compare(enumeration op, const char *a, const char *b, const char *p) 
+	// Method: compare(PROPERTYCOMPAREOP op, char *a, char *b=NULL) 
+	inline bool compare(PROPERTYCOMPAREOP op, const char *a, const char *b=NULL,const char *p=NULL) 
 	{
-		double v1, v2; v1=atof(a); v2=b?atof(b):0;
-		return callback->properties.compare_basic(pstruct.prop->ptype,(PROPERTYCOMPAREOP)op,get_addr(),(void*)&v1,b?(void*)&v2:NULL, p);
+		return callback->properties.compare(pstruct.prop,(char*)(obj+1)+(int64)pstruct.prop->addr,op,a,b,p); 
+		// char v1[1024], v2[1024]; 
+		// return callback->convert.string_to_property(pstruct.prop,(void*)v1,a)>0 && callback->properties.compare_basic(pstruct.prop->ptype,(PROPERTYCOMPAREOP)op,get_addr(),(void*)v1,(b&&callback->convert.string_to_property(pstruct.prop,(void*)v2,b)>0)?(void*)v2:NULL, NULL);
 	};
 
-	// Method: compare(enumeration op, double *a, double *b=NULL, char *p=NULL) 
-	inline bool compare(enumeration op, double *a, double *b=NULL, const char *p=NULL) 
-	{ 
-		return callback->properties.compare_basic(pstruct.prop->ptype,(PROPERTYCOMPAREOP)op,get_addr(),a,b,p);
-	};
+	// // Method: compare(enumeration op, char *a, char *b, char *p) 
+	// inline bool compare(enumeration op, const char *a, const char *b, const char *p) 
+	// {
+	// 	double v1, v2; v1=atof(a); v2=b?atof(b):0;
+	// 	return callback->properties.compare_basic(pstruct.prop->ptype,(PROPERTYCOMPAREOP)op,get_addr(),(void*)&v1,b?(void*)&v2:NULL, p);
+	// };
 
-	// Method: compare(enumeration op, void *a, void *b=NULL) 
-	inline bool compare(enumeration op, void *a, void *b=NULL) 
-	{ 
-		return callback->properties.compare_basic(pstruct.prop->ptype,(PROPERTYCOMPAREOP)op,get_addr(),a,b,NULL);
-	};
+	// // Method: compare(enumeration op, double *a, double *b=NULL, char *p=NULL) 
+	// inline bool compare(enumeration op, double *a, double *b=NULL, const char *p=NULL) 
+	// { 
+	// 	return callback->properties.compare_basic(pstruct.prop->ptype,(PROPERTYCOMPAREOP)op,get_addr(),a,b,p);
+	// };
 
-	// Method: compare_string(enumeration op, char *a, char *b=NULL)
-	inline bool compare_with_string(enumeration op, const char *a, const char *b=NULL, const char *p=NULL)
-	{
-		return callback->properties.compare_basic_str(pstruct.prop,(PROPERTYCOMPAREOP)op,get_addr(),a,b,p);
-	};
+	// // Method: compare(enumeration op, void *a, void *b=NULL) 
+	// inline bool compare(enumeration op, void *a, void *b=NULL) 
+	// { 
+	// 	return callback->properties.compare_basic(pstruct.prop->ptype,(PROPERTYCOMPAREOP)op,get_addr(),a,b,NULL);
+	// };
+
+	// // Method: compare_string(enumeration op, char *a, char *b=NULL)
+	// inline bool compare_with_string(enumeration op, const char *a, const char *b=NULL, const char *p=NULL)
+	// {
+	// 	return callback->properties.compare_basic_str(pstruct.prop,(PROPERTYCOMPAREOP)op,get_addr(),a,b,p);
+	// };
 
 	// Method: call(char *buffer, size_t len)
 	inline int call(char *buffer, size_t len) { return (*(pstruct.prop->method))(obj,buffer,len); };

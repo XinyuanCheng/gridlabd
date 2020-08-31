@@ -571,6 +571,9 @@ public:
 
 	// Method: IsFinite
 	inline bool IsFinite(void) { return isfinite(r) && isfinite(i); };
+
+	inline double get_real(void) const { return r; };
+	inline double get_imag(void) const { return i; };
 };
 #endif
 

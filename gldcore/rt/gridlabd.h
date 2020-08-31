@@ -327,6 +327,34 @@ public:
 	inline bool IsFinite(void) { return isfinite(r) && isfinite(i); };
 };
 
+double complex_get_part(complex z, const char *part)
+{
+	if ( strcmp(part,"real") == 0 )
+	{
+		return z.Re();
+	}
+	else if ( strcmp(part,"imag") == 0 )
+	{
+		return z.Im();
+	}
+	else if ( strcmp(part,"abs") == 0 || strcmp(part,"mag") == 0 )
+	{
+		return z.Mag();
+	}
+	else if ( strcmp(part,"arg") == 0 )
+	{
+		return z.Arg();
+	}
+	else if ( strcmp(part,"ang") == 0 )
+	{
+		return z.Ang();
+	}
+	else
+	{
+		return QNAN;
+	}
+}
+
 #ifdef REAL4
 typedef float real;
 #else
@@ -1226,6 +1254,7 @@ typedef struct s_callbacks {
 		double (*get_part)(OBJECT*,PROPERTY*,char*);
 		PROPERTYSPEC *(*get_spec)(PROPERTYTYPE ptype);
 		bool (*compare_basic_str)(PROPERTY*,PROPERTYCOMPAREOP,void*,const char*,const char*,const char*);
+		int (*compare)(PROPERTY *p, void *data, PROPERTYCOMPAREOP op, const char *a, const char *b);
 	} properties;
 	struct {
 		struct s_findlist *(*objects)(struct s_findlist *,...);

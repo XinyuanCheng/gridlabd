@@ -193,14 +193,9 @@ g_assert::ASSERTSTATUS g_assert::evaluate_status(gld_property &target_prop)
 {
 	const char *a = get_value();
 	const char *b = get_value2();
-	if ( strcmp(get_part(),"") == 0 )
-		return target_prop.compare_with_string(relation,a,b[0]=='\0'?NULL:b) ? AS_TRUE : AS_FALSE ;
-	else
-	{
-		double x = atof(a);
-		double y = atof(b);
-		return target_prop.compare(relation,&x,b[0]=='\0'?NULL:&y,get_part()) ? AS_TRUE : AS_FALSE ;
-	}
+	const char *p = get_part();
+	PROPERTYCOMPAREOP op = (PROPERTYCOMPAREOP)get_relation();
+	return target_prop.compare(op,a,b[0]=='\0'?NULL:b,p) ? AS_TRUE : AS_FALSE ;
 }
 
 /** @} **/

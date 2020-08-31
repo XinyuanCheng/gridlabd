@@ -1455,4 +1455,156 @@ int convert_to_method (	const char *buffer, /**< a pointer to the string buffer 
 	IN_MYCONTEXT output_debug("gldcore/convert_to_method(buffer='%s', object='%s', prop='%s') -> %d", buffer, obj->name?obj->name:"(anon)", prop->name, rc);
 	return rc;
 }
+
+// convert_compare compares strings to properties
+DEPRECATED int convert_compare(const double &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p)
+{
+	double y, z;
+	convert_to_double(a,(void*)&y,p);
+	if ( b != NULL )
+	{
+		convert_to_double(b,(void*)&z,p);
+	}
+	switch ( op )
+	{
+	case TCOP_EQ: return x == y;
+	case TCOP_LE: return x <= y;
+	case TCOP_GE: return x >= y;
+	case TCOP_NE: return x != y;
+	case TCOP_LT: return x < y;
+	case TCOP_GT: return x > y;
+	case TCOP_IN: return y <= x && x <= z;
+	case TCOP_NI: return x < y || z < x;
+	default:
+		return false;
+	}
+}
+
+DEPRECATED int convert_compare(const complex &z, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p, const char *part)
+{
+	if ( part != NULL && part[0] != '\0' )
+	{
+		double x = complex_get_part((void*)&z,part);
+		return convert_compare(x,op,a,b,p);
+	}
+	throw_exception("convert_compare(x=%g%+gi, op=%d, a='%s', b='%s', p='%s'): invalid comparison op", z.get_real(), z.get_imag(), op, a, b, p->name);
+	return false;
+}
+
+DEPRECATED int convert_compare(const varchar &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p)
+{
+	varchar y, z;
+	convert_to_varchar(a,(void*)&y,p);
+	if ( b != NULL )
+	{
+		convert_to_varchar(b,(void*)&z,p);
+	}
+	switch ( op )
+	{
+	case TCOP_EQ: return x == y;
+	case TCOP_LE: return x <= y;
+	case TCOP_GE: return x >= y;
+	case TCOP_NE: return x != y;
+	case TCOP_LT: return x < y;
+	case TCOP_GT: return x > y;
+	case TCOP_IN: return y <= x && x <= z;
+	case TCOP_NI: return x < y || z < x;
+	default:
+		throw_exception("convert_compare(x='%s', op=%d, a='%s', b='%s', p='%s'): invalid comparison op", (const char*)x, op, a, b, p->name);
+		return false;
+	}
+}
+
+DEPRECATED int convert_compare(const object &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p)
+{
+	object y;
+	convert_to_object(a,(void*)&y,p);
+	switch ( op )
+	{
+	case TCOP_EQ: return x == y;
+	case TCOP_NE: return x != y;
+	default:
+		throw_exception("convert_compare(x='%s', op=%d, a='%s', b='%s', p='%s'): invalid comparison op", (const char*)x, op, a, b, p->name);
+		return false;
+	}
+}
+
+DEPRECATED int convert_compare(const TIMESTAMP &t, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p,const char *part)
+{
+	double x = (double)t, y, z;
+	if ( part != NULL && part[0] != '\0' )
+	{
+		x = timestamp_get_part((void*)&t,part);
+		y = atof(a);
+		z = b ? atof(b) : QNAN;
+
+	}
+	else
+	{
+		y = convert_to_timestamp(a);
+		z = b ? convert_to_timestamp(b) : QNAN;
+	}
+	switch ( op )
+	{
+	case TCOP_EQ: return x == y;
+	case TCOP_LE: return x <= y;
+	case TCOP_GE: return x >= y;
+	case TCOP_NE: return x != y;
+	case TCOP_LT: return x < y;
+	case TCOP_GT: return x > y;
+	case TCOP_IN: return z != QNAN && y <= x && x <= z;
+	case TCOP_NI: return z != QNAN && ( x < y || z < x );
+	default:
+		return false;
+	}
+}
+
+DEPRECATED int convert_compare(const bool &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p)
+{
+	bool y, z;
+	convert_to_boolean(a,(void*)&y,p);
+	if ( b != NULL )
+	{
+		convert_to_boolean(b,(void*)&z,p);
+	}
+	switch ( op )
+	{
+	case TCOP_EQ: return x == y;
+	case TCOP_NE: return x != y;
+	default:
+		return false;
+	}
+
+}
+
+DEPRECATED int convert_compare(const int16 &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p)
+{
+	return -1;
+}
+
+DEPRECATED int convert_compare(const int32 &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p)
+{
+	return -1;
+}
+
+DEPRECATED int convert_compare_i(const int64 &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p)
+{
+	return -1;
+}
+
+DEPRECATED int convert_compare(const enumeration &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p)
+{
+	return -1;
+}
+
+DEPRECATED int convert_compare(const set &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p)
+{
+	return -1;
+}
+
+DEPRECATED int convert_compare(void *data, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *prop, const char *part)
+{
+	return -1;    
+}
+
 /**@}**/

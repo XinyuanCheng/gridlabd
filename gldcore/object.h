@@ -164,6 +164,7 @@ typedef struct s_callbacks {
 		double (*get_part)(OBJECT*,PROPERTY*,const char*);
 		PROPERTYSPEC *(*get_spec)(PROPERTYTYPE);
 		bool (*compare_basic_str)(PROPERTY*,PROPERTYCOMPAREOP,void*,const char*,const char*,const char*);
+		int (*compare)(PROPERTY *p, void *data, PROPERTYCOMPAREOP op, const char *a, const char *b, const char *part);
 	} properties;
 	struct {
 		struct s_findlist *(*objects)(struct s_findlist *,...);

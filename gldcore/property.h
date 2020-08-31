@@ -1875,6 +1875,15 @@ int convert_to_string(const char *s, void *data, PROPERTY *p);
  */
 int convert_from_string(char *buffer, int len, void *data, PROPERTY *p);
 
+/*	Function: compare_to_property
+
+	Returns:
+	-1: comparison is impossible
+	0: comparison is false
+	1: comparison is true
+ */
+int property_compare(PROPERTY *p, void *data, PROPERTYCOMPAREOP op, const char *a, const char *b = NULL, const char *part = NULL);
+
 // EOF
 
 #ifdef __cplusplus

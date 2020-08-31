@@ -63,6 +63,17 @@ const char *property_getdefault(PROPERTYTYPE ptype)
 {
 	return property_type[ptype].default_value;
 }
+const char *property_gettypename(PROPERTYTYPE ptype)
+{
+	if ( ptype > _PT_FIRST && ptype < _PT_LAST )
+	{
+		return property_type[ptype].name;
+	}
+	else
+	{
+		return "invalid";
+	}
+}
 
 /** Check whether the properties as defined are mapping safely to memory
     @return 0 on failure, 1 on success
@@ -664,5 +675,64 @@ int convert_from_string(char *buffer, int len, void *data, PROPERTY *p)
 	STRING *str = (STRING*)data;
 	int n = snprintf(buffer,(size_t)len,"%s",(*str)->c_str());
 	return n;
+}
+
+int property_compare (
+	PROPERTY *p, ///< property definition
+	void *data, ///< data pointer
+	PROPERTYCOMPAREOP op, ///< comparison operator
+	const char *a, ///< primary argument
+	const char *b, ///< secondary argumenet
+	const char *part ) ///< property part specification
+{
+	switch ( p->ptype )
+	{
+	case PT_void:
+		return strcmp(a,"") == 0;
+	case PT_double:
+	case PT_loadshape:
+	case PT_enduse:
+	case PT_random:
+		if ( part != NULL )
+		{
+			return convert_compare(data,op,a,b,p,part);
+		}
+		else
+		{
+			return convert_compare(*(double*)data,op,a,b,p);
+		}
+	case PT_complex:
+		return convert_compare(*(complex*)data,op,a,b,p,part);
+	case PT_enumeration:
+		return convert_compare(*(enumeration*)data,op,a,b,p);
+	case PT_set:
+		return convert_compare(*(set*)data,op,a,b,p);
+	case PT_int16:
+		return convert_compare(*(int16*)data,op,a,b,p);
+	case PT_int32:
+		return convert_compare(*(int32*)data,op,a,b,p);
+	case PT_int64:
+		return convert_compare_i(*(int64*)data,op,a,b,p);
+	case PT_char8:
+	case PT_char32:
+	case PT_char256:
+	case PT_char1024:
+		return convert_compare(*(varchar*)data,op,a,b,p);
+	case PT_object:
+		return convert_compare(*(object*)data,op,a,b,p);
+	case PT_bool:
+		return convert_compare(*(bool*)data,op,a,b,p);
+	case PT_timestamp:
+		return convert_compare(*(TIMESTAMP*)data,op,a,b,p,part);
+	case PT_string:
+	case PT_double_array:
+	case PT_complex_array:
+	case PT_real:
+	case PT_float:
+	case PT_method:
+	default:
+		output_warning("property_compare() not implemented for property type '%s'",property_gettypename(p->ptype));
+	}
+	return -1;
 }
 // EOF

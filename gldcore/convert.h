@@ -149,4 +149,18 @@ DEPRECATED int initial_from_method(char *buffer, int size, void *data, PROPERTY 
 }
 #endif
 
+// Function: convert_compare
+DEPRECATED int convert_compare(const double &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p);
+DEPRECATED int convert_compare(const complex &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p, const char *part);
+DEPRECATED int convert_compare(const varchar &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p);
+DEPRECATED int convert_compare(const object &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p);
+DEPRECATED int convert_compare(const TIMESTAMP &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p, const char *part);
+DEPRECATED int convert_compare(const bool &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p);
+DEPRECATED int convert_compare(const int16 &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p);
+DEPRECATED int convert_compare(const int32 &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p);
+DEPRECATED int convert_compare_i(const int64 &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p);
+DEPRECATED int convert_compare(const enumeration &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p);
+DEPRECATED int convert_compare(const set &x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *p);
+DEPRECATED int convert_compare(void *x, PROPERTYCOMPAREOP op, const char *a, const char *b, PROPERTY *prop, const char *part);
+
 #endif
