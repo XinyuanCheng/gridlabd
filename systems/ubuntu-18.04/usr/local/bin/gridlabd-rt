@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "NOTICE   [$(date '+%Y-%m-%d %H:%M:%S %Z')] : $0 restarting $(/usr/local/bin/gridlabd --version=all)" >>/var/log/gridlabd.log
+/usr/local/bin/gridlabd -W /var/www/html --pidfile=/tmp/gridlabd.pid model/ieee123.glm 1>>/var/log/gridlabd.log 2>&1
